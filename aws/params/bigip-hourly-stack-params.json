@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterValue":"",
+    "ParameterKey":"EniStackName"
+  },
+  {
+    "ParameterValue": "",
+    "ParameterKey" : "adminPassword"
+  },
+  {
+    "ParameterValue": "f5app",
+    "ParameterKey": "application"
+  },
+  {
+    "ParameterValue": "f5costcenter",
+    "ParameterKey": "costcenter"
+  },
+  {
+    "ParameterValue": "f5env",
+    "ParameterKey": "environment"
+  },
+  {
+    "ParameterValue": "f5group",
+    "ParameterKey": "group"
+  },
+  {
+    "ParameterValue": "Better25Mbps",
+    "ParameterKey": "imageName"
+  },
+  {
+    "ParameterValue": "m4.large",
+    "ParameterKey": "instanceType"
+  },
+  {
+    "ParameterValue": "f5owner",
+    "ParameterKey": "owner"
+  },
+  {
+    "ParameterValue": "0.0.0.0/0",
+    "ParameterKey": "restrictedSrcAddress"
+  },
+  {
+    "ParameterValue": "",
+    "ParameterKey": "sshKey"
+  }
+]

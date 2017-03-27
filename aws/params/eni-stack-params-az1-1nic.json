@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterValue": "f5app",
+    "ParameterKey": "application"
+  },
+  {
+    "ParameterValue": "sg-db8f01a6",
+    "ParameterKey": "bigipExternalSecurityGroup"
+  },
+  {
+    "ParameterValue": "f5costcenter",
+    "ParameterKey": "costcenter"
+  },
+  {
+    "ParameterValue": "f5env",
+    "ParameterKey": "environment"
+  },
+  {
+    "ParameterValue": "f5group",
+    "ParameterKey": "group"
+  },
+  {
+    "ParameterValue": "f5owner",
+    "ParameterKey": "owner"
+  },
+  {
+    "ParameterValue": "0.0.0.0/0",
+    "ParameterKey": "restrictedSrcAddress"
+  },
+  {
+    "ParameterValue": "subnet-77269a5a",
+    "ParameterKey": "subnet1Az1"
+  },
+  {
+    "ParameterValue": "vpc-12d52674",
+    "ParameterKey": "Vpc"
+  }
+]

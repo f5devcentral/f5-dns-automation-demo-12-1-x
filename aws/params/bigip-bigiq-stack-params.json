@@ -1,0 +1,62 @@
+[
+  {
+    "ParameterValue":"-az1-3nic-stack1",
+    "ParameterKey":"EniStackName"
+  },
+  {
+    "ParameterValue": "",
+    "ParameterKey" : "adminPassword"
+  },
+  {
+    "ParameterValue": "f5app",
+    "ParameterKey": "application"
+  },
+  {
+    "ParameterValue": "f5costcenter",
+    "ParameterKey": "costcenter"
+  },
+  {
+    "ParameterValue": "f5env",
+    "ParameterKey": "environment"
+  },
+  {
+    "ParameterValue": "f5group",
+    "ParameterKey": "group"
+  },
+  {
+    "ParameterValue": "Good",
+    "ParameterKey": "imageName"
+  },
+  {
+    "ParameterValue": "m4.xlarge",
+    "ParameterKey": "instanceType"
+  },
+  {
+    "ParameterValue": "f5owner",
+    "ParameterKey": "owner"
+  },
+  {
+    "ParameterValue": "0.0.0.0/0",
+    "ParameterKey": "restrictedSrcAddress"
+  },
+  {
+    "ParameterValue": "",
+    "ParameterKey": "sshKey"
+  },
+  {
+   "ParameterValue":"admin",
+   "ParameterKey":"bigiqUsername"
+  },
+  {
+   "ParameterValue":"",
+   "ParameterKey":"bigiqPassword"
+  },
+  {
+   "ParameterValue":"10.1.1.166",
+   "ParameterKey":"bigiqAddress"
+  },
+  {
+   "ParameterValue":"DevKeyPool",
+   "ParameterKey":"bigiqLicensePoolName"
+  }  
+]

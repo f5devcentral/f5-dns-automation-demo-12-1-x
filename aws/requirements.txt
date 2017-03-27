@@ -1,0 +1,6 @@
+boto3
+f5-sdk
+pexpect
+# required for build
+#awacs
+#troposphere
