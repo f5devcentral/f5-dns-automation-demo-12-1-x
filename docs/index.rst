@@ -48,33 +48,6 @@ During Lab  3 we will utilize the F5 Python SDK to script the steps that
 were previously performed manually.  The Application Services iApp will
 also be leveraged to provide Service Catalog of L4-L7 services.
 
-Lab 4: Deploying BIG-IP DNS with F5 AWS Cloud Formation Templates
-===================================================================
-
-Prior to Phase 2 all the inputs are static inputs.  This Phase will leverage the AWS
-APIs to deploy BIG-IP devices and deploy L4-L7 services with dynamic inputs.
-
-
-.. toctree::
-   :maxdepth: 2
-   :caption: BIG-IP GUI
-
-.. toctree::
-   :maxdepth: 2
-   :caption: F5 TMSH
-
-   tmsh/overview
-
-.. toctree::
-   :maxdepth: 2
-   :caption: F5 UDF 2.0
-
-.. toctree::
-   :maxdepth: 2
-   :caption: AWS
-
-
-
 
 Indices and tables
 ==================
