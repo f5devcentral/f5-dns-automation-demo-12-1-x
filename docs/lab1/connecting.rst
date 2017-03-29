@@ -64,7 +64,8 @@ Download/launch the RDP link.
 | *Note that RDP will launch full screen*
 | *For HiDPI displays you may want to re-size your screen first*
 
-The username is "Administrator" and the password can be found under the "Details" page of the win2008-rdp component.  You should see a desktop that looks like the following.
+The username is "Administrator" and the password can be found under the "Details" page of the win2008-rdp component.  
+Note: copy/paste of the password into the RDP session does not work. You can copy the password, open the RDP session settings in your RPD clinet and paste the password there. Save it and open the RDP session. You should see a desktop that looks like the following.
 
 .. image:: windows-desktop.png
    :scale: 50%
