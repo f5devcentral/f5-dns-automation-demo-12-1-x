@@ -251,6 +251,11 @@ Pool config example:
 
 **Virtual Servers**
 
+In the next step create two standard TCP virtual servers per BIG-IP.
+One external and one internal. 
+Apply the http-XFF profile, SNAT Automap and the pool "serverpool"
+
+Use following IP addresses
 ======= =========== =========== ==== 
 Device  Name        Address     Port 
 ======= =========== =========== ==== 
@@ -259,6 +264,22 @@ bigip1  internal_vs 10.1.10.100  80
 bigip2  external_vs 10.1.30.10   80  
 bigip2  internal_vs 10.1.30.100  80  
 ======= =========== =========== ==== 
+
+Here a configuration example:
+
+.. image:: external_vs_pt1.png
+   :scale: 50%
+   :align: center
+
+.. image:: external_vs_pt2.png
+   :scale: 50%
+   :align: center
+   
+.. image:: external_vs_pt3.png
+   :scale: 50%
+   :align: center
+
+
 
 
 DNS Topology
