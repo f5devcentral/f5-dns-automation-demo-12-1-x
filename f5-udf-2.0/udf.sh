@@ -1,4 +1,4 @@
-cd /home/user/f5-icontrol-codeshare-python/aws-dns-example
+cd ../lib
 python bigip_dns_helper.py --host=10.1.1.7 --action enable_sync
 python bigip_dns_helper.py --host=10.1.1.7 --action add_datacenter --datacenter SUBNET_10
 python bigip_dns_helper.py --host=10.1.1.7 --action add_datacenter --datacenter SUBNET_30
