@@ -239,8 +239,8 @@ Enable Priority Group Activation with "1 Available Member"
 ======  ============== ==== ==============  ============== ==== ===============
 Device  Pool Member #1 Port Priority Group  Pool Member #2 Port Priority Group
 ======  ============== ==== ==============  ============== ==== ===============
-bigip1  10.1.240.10     80      10          10.1.250.10     80        0
-bigip2  10.1.250.10     80      10          10.1.240.10     80        0
+bigip1  10.1.240.10     80      10          10.1.250.10     80      0
+bigip2  10.1.250.10     80      10          10.1.240.10     80      0
 ======  ============== ==== ==============  ============== ==== ===============
 
 Pool config example:
@@ -256,6 +256,7 @@ One external and one internal.
 Apply the http-XFF profile, SNAT Automap and the pool "serverpool"
 
 Use following IP addresses
+
 ======= =========== =========== ==== 
 Device  Name        Address     Port 
 ======= =========== =========== ==== 
