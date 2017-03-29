@@ -131,11 +131,26 @@ In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS 
 DNS Profiles
 ------------
 
-There are two DNS profiles that are created.  One for providing a resolving DNS server and one for external DNS requests (bad idea to have an open resolver on the internet).  
+Two DNS profiles are required. One for providing a resolving DNS server and one for external DNS requests (bad idea to have an open resolver on the internet). Now crate them.
 
-Create a profile named "external_dns" that only provides GSLB and disables fallback to BIND.  
+Under DNS -> Delivery -> Profiles -> DNS:
+Create a profile named "external_dns" that only provides GSLB and disables fallback to BIND.
+.. image:: external_dns_profile.png
+   :scale: 50%
+   :align: center
 
+Under DNS -> Caches -> Cache List:
+Create a DNS cache profile "internal_cache" and accept default values.
+.. image:: internal_cache_profile.png
+   :scale: 50%
+   :align: center
+   
+Under DNS -> Delivery -> Profiles -> DNS:
 Create a profile named "internal_dns" that enables a DNS cache for resolving names.
+.. image:: internal_dns_profile.png
+   :scale: 50%
+   :align: center
+
 
 DNS Listeners
 -------------
