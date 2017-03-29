@@ -214,6 +214,16 @@ Here is an example of the internal TCP Listener:
 LTM Configuration
 ------------------
 
+Now we have to configure the LTM sectiopn of both BIG-IP's. Since both BIG-IP's are standalone the configuration steps has to be applied to both BIG-IP's.
+
+First create an http profile named "http-XFF" that inserts X-Forwarded-For headers 
+Local Traffic -> Profiles -> Services -> HTTP
+
+.. image:: http_XFF_profile.png
+   :scale: 50%
+   :align: center
+
+
 In the Demo LTM is configured to use cookie persistence, insert X-Forwarded-For headers, and use Priority Groups for delivering traffic.
 
 **Virtual Servers**
