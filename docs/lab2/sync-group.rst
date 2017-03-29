@@ -226,6 +226,29 @@ Local Traffic -> Profiles -> Services -> HTTP
 
 In the Demo LTM is configured to use cookie persistence, insert X-Forwarded-For headers, and use Priority Groups for delivering traffic.
 
+
+**Pools**
+
+Create a pool "serverpool" on each BIG-IP. 
+Local Traffic -> Pools
+
+Assign HTTP and TCP monitors 
+Enable Priority Group Activation with "1 Available Member"
+
+
+======  ==============  ==============  ============== ===============
+Device  Pool Member #1  Priority Group  Pool Member #2 Priority Group
+======  ==============  ==============  ============== ===============
+bigip1  10.1.240.10:80      10          10.1.250.10:80    0
+bigip2  10.1.250.10:80      10          10.1.240.10:80    0
+======  ==============  ==============  ============== ===============
+
+Pool config example:
+
+.. image:: serverpool.png
+   :scale: 50%
+   :align: center
+
 **Virtual Servers**
 
 ======= =========== =========== ==== 
@@ -236,15 +259,6 @@ bigip1  internal_vs 10.1.10.100  80
 bigip2  external_vs 10.1.30.10   80  
 bigip2  internal_vs 10.1.30.100  80  
 ======= =========== =========== ==== 
-
-**Pools**
-
-======  ==============  ==============  ============== ===============
-Device  Pool Member #1  Priority Group  Pool Member #2 Priority Group
-======  ==============  ==============  ============== ===============
-bigip1  10.1.240.10      10              10.1.250.10    0
-bigip2  10.1.250.10      10              10.1.240.10    0
-======  ==============  ==============  ============== ===============
 
 
 DNS Topology
