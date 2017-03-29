@@ -5,14 +5,13 @@ import sys
 from pprint import pprint
 import os
 from optparse import OptionParser
-
-sys.path.insert(0, os.path.abspath('../lib'))
-
 from bigip_dns_helper import DnsHelper
 import logging
 
+sys.path.insert(0, os.path.abspath('../lib'))
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('dns_demo')
-logging.basicConfig()
 logger.setLevel(logging.DEBUG)
 
 def create_eni(primary_stack_eni, secondary_stack_eni):
@@ -31,12 +30,22 @@ class Demo(object):
 
 
         # primary
-        resp = self.cloudformation.describe_stacks(StackName=primary_stack)
-        outputs = dict([(a['OutputKey'],a['OutputValue']) for a in resp['Stacks'][0]['Outputs']])
-        self.primary_instance_id = outputs['Bigip1InstanceId']
-        self.primary_instance = self.ec2.Instance(self.primary_instance_id)
+        primary_resp = self.cloudformation.describe_stacks(StackName=primary_stack)
+        self.primary_stack_status = primary_resp['Stacks'][0]['StackStatus']
+
         # secondary
         resp = self.cloudformation.describe_stacks(StackName=secondary_stack)
+        self.secondary_stack_status = resp['Stacks'][0]['StackStatus']
+
+        if self.primary_stack_status == 'CREATE_IN_PROGRESS' or self.secondary_stack_status == 'CREATE_IN_PROGRESS':
+            print 'CREATE_IN_PROGRESS'
+            return
+
+        outputs = dict([(a['OutputKey'],a['OutputValue']) for a in primary_resp['Stacks'][0]['Outputs']])
+        self.primary_instance_id = outputs['Bigip1InstanceId']
+        self.primary_instance = self.ec2.Instance(self.primary_instance_id)
+
+
         outputs = dict([(a['OutputKey'],a['OutputValue']) for a in resp['Stacks'][0]['Outputs']])
         self.secondary_instance_id = outputs['Bigip1InstanceId']
         self.secondary_instance = self.ec2.Instance(self.secondary_instance_id)
@@ -58,25 +67,32 @@ class Demo(object):
         self.primary_dns_listener = self.primary_dev[1][1][0]
         self.secondary_dns_listener = self.secondary_dev[1][1][0]
 
-        self.primary_ltm_vs1  = self.primary_dev[1][2][0]
-        self.secondary_ltm_vs1 = self.secondary_dev[1][2][0]
+#        self.primary_ltm_vs1  = self.primary_dev[1][2][0]
+#        self.secondary_ltm_vs1 = self.secondary_dev[1][2][0]
 
-        self.primary_ltm_vs1_eip  = self.primary_dev[1][2][1]
-        self.secondary_ltm_vs1_eip = self.secondary_dev[1][2][1]
+        self.primary_ltm_vs1  = self.primary_dns_listener
+        self.secondary_ltm_vs1 = self.secondary_dns_listener
 
-        self.primary_ltm_vs2  = self.primary_dev[1][3][0]
-        self.secondary_ltm_vs2 = self.secondary_dev[1][3][0]
+#        self.primary_ltm_vs1_eip  = self.primary_dev[1][2][1]
+#        self.secondary_ltm_vs1_eip = self.secondary_dev[1][2][1]
+
+        self.primary_ltm_vs1_eip  = self.primary_dev[1][1][1]
+        self.secondary_ltm_vs1_eip = self.secondary_dev[1][1][1]
+
+#        self.primary_ltm_vs2  = self.primary_dev[1][3][0]
+#        self.secondary_ltm_vs2 = self.secondary_dev[1][3][0]
 
 
 
         self.primary_dc =  self.primary_instance.placement['AvailabilityZone']
         self.secondary_dc =  self.secondary_instance.placement['AvailabilityZone']
 
+
         self.dns_helper = DnsHelper(self.primary_mgmt_ip, 'admin', password, 
-                               self.secondary_mgmt_ip, 'admin', password)
+                               peer_host=self.secondary_mgmt_ip, peer_username='admin', peer_password=password)
 
         self.dns_helper_peer = DnsHelper(self.secondary_mgmt_ip, 'admin', self.password, 
-                                    self.primary_mgmt_ip, 'admin', self.password)
+                                    peer_host=self.primary_mgmt_ip, peer_username='admin', peer_password=self.password)
 
 
 
@@ -230,6 +246,9 @@ if __name__ == "__main__":
        demo.deploy_secondary_vs1(options.password_file, options.pool_members)
    elif options.action == 'deploy_vs1_dns':
        demo.deploy_vs1_dns()
-
-
-       
+   elif options.action == 'wait_for_stack':
+       while demo.primary_stack_status == 'CREATE_IN_PROGRESS' or demo.secondary_stack_status == 'CREATE_IN_PROGRESS':
+           import time
+           time.sleep(3)
+           demo = Demo(options.primary_stack, options.secondary_stack, password)
+           print 'waiting'
