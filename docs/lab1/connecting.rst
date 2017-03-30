@@ -43,11 +43,54 @@ The Deployment is now starting.
 .. image:: deployment-starting.png
    :scale: 50%
    :align: center
+   
+About the Demo Environment
+==========================
 
+This demo is designed to provide a solution with the following attributes.
+
+ * Two BIG-IP devices in separate Data Centers (Regions, Availability Zone, etc...)
+ * Two backend servers in separate DC 
+ * The two DC are routable to each other via L3
+ * Provide recursive DNS for internal clients
+ 
+.. image:: demo-schematic.png
+   :scale: 25%
+   :align: center
+ 
+The desired behavior for requests
+
+ * External clients round-robin between backend servers
+ * Persist External client requests to original DC server if requests move between DC
+ * Internal client requests will have affinity to local DC server
+ 
+.. image:: external-clients.png
+   :scale: 25%
+   :align: center
+ 
+.. image:: internal-clients.png
+   :scale: 25%
+   :align: center
+
+Servers in the Demo
+===================
+
+==================   ==================  =========================  ==============================================
+    Hostname             MGMT IP             Network IP                    Login / Password
+==================   ==================  =========================  ==============================================
+    win2008-rdp         10.1.1.10              10.1.20.5             administrator / [see details page]
+    bigip1              10.1.1.7               10.1.10.240           admin / admin
+    bigip2              10.1.1.8               10.1.10.240           admin / admin
+    server1              10.1.1.4              10.1.240.10           centos or user / [ssh key] 
+    server2              10.1.1.5              10.1.250.10           centos or user / [ssh key]
+    automation           10.1.1.6              10.1.20.8             centos or user / [ssh key]
+    jenkins              10.1.1.11                                   ubuntu / [ssh key]
+==================   ==================  =========================  ==============================================   
+   
 Connecting with Windows RDP
 ===========================
-   
 Once the Deployment is finished starting click on the "Components" tab to get a view like the following.
+   
 
 .. image:: deployment-components.png
    :scale: 50%
