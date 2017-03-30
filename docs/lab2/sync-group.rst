@@ -286,9 +286,110 @@ Here a configuration example:
 DNS Topology
 ------------
 
-The Demo makes use of DNS Topology to provide split-DNS and also provide traffic affinity to adjacent resources.
+After BIG-IP DNS and BIG-IP LTM are configured and ready to run, it is time to create the logical geographical load balancing.
+BIG-IP DNS will receive DNS requests and respond based on the location of the requesting IP.
 
-**Regions**
+The demo will show two sections:
+
+1. Split DNS: BIG-IP DNS will respond to internal clients with private IP addresses differently than for external clients with IP addresses that are not internal.
+2. regional Loadbalancing - based on the region of the client IP the response will be different.
+	Note: we will simulate the requin with a private IP address range, because this lab is not exposed to the Internet.
+	
+The steps to create geolocation based load balancing on BIG-IP DNS are:
+
+1. add the virtual servers
+2. create the pools
+3. create wide-IPs
+4. create regions
+5. create records
+
+All configurations have to be applied on both BIG-IP's
+
+**Step 1: Virtual Servers**
+
+BIG-IP DNS has to be aware of the services that are provided by BIG-IP LTM.
+BIG-IP DNS sees BIG-IP LTM as a Server that is bound to a datacenter. 
+For BIG-IP DNS the virtual servers on the BIG-IP LTM are virtual servers on the server in the datacenter.
+
+Create the virtual servers on BIG-IP DNS under:
+
+DNS -> GSLB -> Servers
+
+Use following IP addresses for the virtual servers: 
+
+====== =========== ===============  ==============
+Device Name        IP:PORT			Health Monitor
+====== =========== ===============  ==============
+bigip1 external_vs 10.1.10.10:80		bigip
+bigip1 internal_vs 10.1.10.100:80 		bigip
+bigip2 external_vs 10.1.30.10:80		bigip
+bigip2 internal_vs 10.1.30.100:80		bigip
+====== =========== ===============  ==============
+
+Here an example:
+
+.. image:: bigip_dns_vs_config.png
+   :scale: 50%
+   :align: center
+
+
+**Step 2: Pools** 
+
+The next step is to configure the pool.
+under: DNS -> GSLB -> Pools
+
+Configure two pools (internal_pool and external_pool) with following load balancing methods:
+* Preferred: Topology
+* Alternate: Round-Robin
+* Fallback: none
+
+use following settings:
+
+=============  ====   =======================================
+Name           Type		Pool Members
+=============  ====   =======================================
+external_pool	 A	   bigip1:external_vs, bigip2:external_vs
+internal_pool	 A	   bigip1:internal_vs, bigip2:internal_vs
+=============  ====   =======================================
+
+
+Here an example:
+
+.. image:: DNS_pool_creation_pt1.png
+   :scale: 50%
+   :align: center
+
+.. image:: DNS_pool_creation_pt2.png
+   :scale: 50%
+   :align: center
+
+
+**Step 3: Wide IPs**
+
+The next step is to configure the Wide IP.
+under: DNS -> GSLB -> Wide IPs
+
+use following settings and Topology as load balancing method
+
+===================== ==== ================================== ================
+Name                  Type	Pools                              Last Resort pool
+===================== ==== ================================== ================
+www.f5demo.com         A    external_pool, internal_pool       external_pool
+===================== ==== ================================== ================
+
+Here an example:
+
+.. image:: DNS_wide_IP.png
+   :scale: 50%
+   :align: center
+
+
+**Step 4: Regions**
+
+The next step is to define regions that will be used by topology records.
+under DNS -> GSLB -> Topology -> Regions
+
+Use following IP addresses:
 
 ================ ==========================
 Name             Subnets
@@ -298,7 +399,20 @@ region_1         10.1.10.0/24,10.1.240.0/24
 region_2         10.1.30.0/24,10.1.250.0/24
 ================ ==========================
 
-**Records**
+Here an example:
+
+.. image:: regions_internal_subnet.png
+   :scale: 50%
+   :align: center
+
+
+**Step 5: Records**
+
+The last step is to define the topology records, that BIG-IP DNS will use for load balancing decisions
+under DNS -> GSLB -> Topology -> Records
+
+ 
+use following settings
 
 =============================== =========  =============================
 Source                          is/is not  Destination
@@ -312,34 +426,3 @@ region /Common/region_2         is         region /Common/region_2
 DNS Configuration
 -----------------
 
-**Virtual Servers**
-
-====== =========== ===============
-Device Name        IP:PORT
-====== =========== ===============
-bigip1 external_vs 10.1.10.10:80
-bigip1 internal_vs 10.1.10.100:80
-bigip2 external_vs 10.1.30.10:80
-bigip2 internal_vs 10.1.30.100:80
-====== =========== ===============
-
-**Pools** 
-
-These are configured with LB of Topology/Round-Robin
-
-============= =======================================
-Name          Pool Members
-============= =======================================
-external_pool bigip1:external_vs, bigip2:external_vs
-internal_pool bigip1:internal_vs, bigip2:internal_vs
-============= =======================================
-
-**Wide IPs**
-
-These are configured with LB of Topology
-
-===================== ================================== ================
-Name                  Pools                              Last Resort pool
-===================== ================================== ================
-www.f5demo.com        external_pool, internal_pool       external_pool
-===================== ================================== ================
