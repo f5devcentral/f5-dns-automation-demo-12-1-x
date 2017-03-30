@@ -207,7 +207,7 @@ class DnsHelper(object):
          print "command: " + command
          print "peer_user: " + peer_user
          print "peer_host: " + peer_host
-         print "password: " + password
+#         print "password: " + password
 
 
 
