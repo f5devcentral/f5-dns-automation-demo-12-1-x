@@ -303,7 +303,7 @@ The steps to create geolocation based load balancing on BIG-IP DNS are:
 4. create regions
 5. create records
 
-All configurations have to be applied on both BIG-IP's
+All configurations have to be applied one BIG-IP DNS only. The config changes will be synced to the other BIG-IP DNS via a sync group that was created before.
 
 **Step 1: Virtual Servers**
 
