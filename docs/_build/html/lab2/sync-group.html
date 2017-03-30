@@ -1,0 +1,641 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Creating BIG-IP DNS Sync Group &mdash; F5 DNS Automation Demo 12.1.x  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="F5 DNS Automation Demo 12.1.x  documentation" href="../index.html"/>
+        <link rel="next" title="F5 Python SDK" href="../lab3/scripted.html"/>
+        <link rel="prev" title="Connecting to UDF 2.0" href="../lab1/connecting.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> F5 DNS Automation Demo 12.1.x
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Lab 1: Connecting to UDF 2.0</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lab1/connecting.html">Connecting to UDF 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab1/connecting.html#launching-deployment">Launching Deployment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab1/connecting.html#connecting-with-windows-rdp">Connecting with Windows RDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab1/connecting.html#licensing-resetting-big-ip">Licensing/Resetting BIG-IP</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Lab 2: Traditional BIG-IP DNS Deployment</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating BIG-IP DNS Sync Group</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#configuring-big-ip-dns">Configuring BIG-IP DNS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#optional-exercises">Optional Exercises</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dns-cache">DNS Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dns-profiles">DNS Profiles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dns-listeners">DNS Listeners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ltm-configuration">LTM Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dns-topology">DNS Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dns-configuration">DNS Configuration</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Lab 3: Deploying BIG-IP DNS with F5 Python SDK</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../lab3/scripted.html">F5 Python SDK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab3/scripted.html#run-demo">Run Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab3/scripted.html#exploring-the-demo">Exploring the Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lab3/scripted.html#optional-exercises">Optional Exercises</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">F5 DNS Automation Demo 12.1.x</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Creating BIG-IP DNS Sync Group</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/lab2/sync-group.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="creating-big-ip-dns-sync-group">
+<h1>Creating BIG-IP DNS Sync Group<a class="headerlink" href="#creating-big-ip-dns-sync-group" title="Permalink to this headline">¶</a></h1>
+<p>The following is adapted from the official F5 documentation:</p>
+<p><a class="reference external" href="https://support.f5.com/kb/en-us/products/big-ip-dns/manuals/product/bigip-dns-implementations-12-1-0/3.html#conceptid">https://support.f5.com/kb/en-us/products/big-ip-dns/manuals/product/bigip-dns-implementations-12-1-0/3.html#conceptid</a></p>
+<p>First start by launching Google Chrome.</p>
+<a class="reference internal image-reference" href="../_images/google-chrome.png"><img alt="../_images/google-chrome.png" class="align-center" src="../_images/google-chrome.png" style="width: 45.5px; height: 41.0px;" /></a>
+<p>In Chrome you should see links to BIG-IP 1 and 2.</p>
+<a class="reference internal image-reference" href="../_images/google-chrome-tabs.png"><img alt="../_images/google-chrome-tabs.png" class="align-center" src="../_images/google-chrome-tabs.png" style="width: 163.0px; height: 68.0px;" /></a>
+<p>Login to BIG-IP 1 <em>username: admin, password: admin</em></p>
+<a class="reference internal image-reference" href="../_images/bigip-login.png"><img alt="../_images/bigip-login.png" class="align-center" src="../_images/bigip-login.png" style="width: 114.0px; height: 225.0px;" /></a>
+<p>Take a look at the current config.  You should see BIG-IP DNS is provisioned.</p>
+<a class="reference internal image-reference" href="../_images/bigip-provisioned.png"><img alt="../_images/bigip-provisioned.png" class="align-center" src="../_images/bigip-provisioned.png" style="width: 272.0px; height: 182.5px;" /></a>
+<p>There is an existing self IP.</p>
+<a class="reference internal image-reference" href="../_images/bigip-selfip.png"><img alt="../_images/bigip-selfip.png" class="align-center" src="../_images/bigip-selfip.png" style="width: 388.0px; height: 105.0px;" /></a>
+</div>
+<div class="section" id="configuring-big-ip-dns">
+<h1>Configuring BIG-IP DNS<a class="headerlink" href="#configuring-big-ip-dns" title="Permalink to this headline">¶</a></h1>
+<p>The following will go through the basic steps of setting up BIG-IP DNS.</p>
+<p>First go to DNS -&gt; Settings -&gt; GSLB -&gt; General</p>
+<p>Find the &#8220;Synchronize&#8221; checkbox and click on it.</p>
+<a class="reference internal image-reference" href="../_images/enable-sync.png"><img alt="../_images/enable-sync.png" class="align-center" src="../_images/enable-sync.png" style="width: 165.5px; height: 124.0px;" /></a>
+<p>Next go back to DNS -&gt; GSLB -&gt; Data Centers</p>
+<p>Create a Data Center (DC) named SUBNET_10 and SUBNET_30.</p>
+<a class="reference internal image-reference" href="../_images/add-datacenter.png"><img alt="../_images/add-datacenter.png" class="align-center" src="../_images/add-datacenter.png" style="width: 217.0px; height: 67.0px;" /></a>
+<p>Next go to DNS-&gt;GSLB-&gt;Servers</p>
+<p>Create a server bigip1 associated with SUBNET_10 and bigip2 associated with SUBNET_30.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="41%" />
+<col width="34%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Address</th>
+<th class="head">Data Center</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>10.1.10.240</td>
+<td>SUBNET_10</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>10.1.30.240</td>
+<td>SUBNET_30</td>
+</tr>
+</tbody>
+</table>
+<a class="reference internal image-reference" href="../_images/add-server.png"><img alt="../_images/add-server.png" class="align-center" src="../_images/add-server.png" style="width: 271.5px; height: 164.0px;" /></a>
+<p>At this point BIG-IP 1 has the desired BIG-IP DNS configuration, but it needs to be synced with BIG-IP 2.</p>
+<p>From the Desktop launch &#8220;Putty&#8221;.</p>
+<a class="reference internal image-reference" href="../_images/launch-putty.png"><img alt="../_images/launch-putty.png" class="align-center" src="../_images/launch-putty.png" style="width: 35.5px; height: 45.0px;" /></a>
+<p>Find the BIG-IP 2 login.</p>
+<a class="reference internal image-reference" href="../_images/connect-bigip2-putty.png"><img alt="../_images/connect-bigip2-putty.png" class="align-center" src="../_images/connect-bigip2-putty.png" style="width: 224.0px; height: 214.5px;" /></a>
+<p>Login. <em>username: admin, password: admin</em></p>
+<a class="reference internal image-reference" href="../_images/bigip2-putty-login.png"><img alt="../_images/bigip2-putty-login.png" class="align-center" src="../_images/bigip2-putty-login.png" style="width: 175.0px; height: 47.5px;" /></a>
+<p>Run the command:</p>
+<div class="highlight-sh"><div class="highlight"><pre><span></span>run /gtm gtm_add -a admin@10.1.10.240
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/gtm_add.png"><img alt="../_images/gtm_add.png" class="align-center" src="../_images/gtm_add.png" style="width: 331.0px; height: 92.0px;" /></a>
+<p>When prompted confirm/enter password.</p>
+<a class="reference internal image-reference" href="../_images/gtm_add-confirm.png"><img alt="../_images/gtm_add-confirm.png" class="align-center" src="../_images/gtm_add-confirm.png" style="width: 331.5px; height: 193.5px;" /></a>
+<p>In Chrome login to BIG-IP 2 and you should see that it is now synced.</p>
+<a class="reference internal image-reference" href="../_images/bigip2-synced.png"><img alt="../_images/bigip2-synced.png" class="align-center" src="../_images/bigip2-synced.png" style="width: 298.5px; height: 220.0px;" /></a>
+<p>You should have a pair of BIG-IP devices that are in a DNS Sync Group.  The next lab will go through the process of scripting these actions.</p>
+</div>
+<div class="section" id="optional-exercises">
+<h1>Optional Exercises<a class="headerlink" href="#optional-exercises" title="Permalink to this headline">¶</a></h1>
+<p>The full automation will also perform the following.</p>
+<div class="section" id="dns-cache">
+<h2>DNS Cache<a class="headerlink" href="#dns-cache" title="Permalink to this headline">¶</a></h2>
+<p>In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS cache named &#8220;dns_cache&#8221;.</p>
+</div>
+<div class="section" id="dns-profiles">
+<h2>DNS Profiles<a class="headerlink" href="#dns-profiles" title="Permalink to this headline">¶</a></h2>
+<p>Two DNS profiles are required. One for providing a resolving DNS server and one for external DNS requests (bad idea to have an open resolver on the internet). Now create them on both BIG-IP&#8217;s.</p>
+<p>Under DNS -&gt; Delivery -&gt; Profiles -&gt; DNS:
+Create a profile named &#8220;external_dns&#8221; that only provides GSLB and disables fallback to BIND.</p>
+<a class="reference internal image-reference" href="../_images/external_dns_profile.png"><img alt="../_images/external_dns_profile.png" class="align-center" src="../_images/external_dns_profile.png" style="width: 972.0px; height: 558.0px;" /></a>
+<p>Under DNS -&gt; Caches -&gt; Cache List:
+Create a DNS cache profile &#8220;internal_cache&#8221; and accept default values.</p>
+<a class="reference internal image-reference" href="../_images/internal_cache_profile.png"><img alt="../_images/internal_cache_profile.png" class="align-center" src="../_images/internal_cache_profile.png" style="width: 251.0px; height: 393.5px;" /></a>
+<p>Under DNS -&gt; Delivery -&gt; Profiles -&gt; DNS:
+Create a profile named &#8220;internal_dns&#8221; that enables a DNS cache for resolving names.</p>
+<a class="reference internal image-reference" href="../_images/internal_dns_profile.png"><img alt="../_images/internal_dns_profile.png" class="align-center" src="../_images/internal_dns_profile.png" style="width: 579.5px; height: 306.5px;" /></a>
+</div>
+<div class="section" id="dns-listeners">
+<h2>DNS Listeners<a class="headerlink" href="#dns-listeners" title="Permalink to this headline">¶</a></h2>
+<p>For external DNS we have two listeners for each BIG-IP. One TCP and one UDP.
+First create on both BIG-IP&#8217;s the external Listeners for TCP and UDP. Apply the external_dns profile to each.
+Use these IP addresses:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="48%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Address</th>
+<th class="head">Port</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>10.1.10.13</td>
+<td>53</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>10.1.30.13</td>
+<td>53</td>
+</tr>
+</tbody>
+</table>
+<p>DNS -&gt; Delivery -&gt; Listeners
+Here the external TCP listener</p>
+<a class="reference internal image-reference" href="../_images/external_tcp_listener.png"><img alt="../_images/external_tcp_listener.png" class="align-center" src="../_images/external_tcp_listener.png" style="width: 334.5px; height: 236.0px;" /></a>
+<p>Here the external UDP listener</p>
+<a class="reference internal image-reference" href="../_images/external_udp_listener.png"><img alt="../_images/external_udp_listener.png" class="align-center" src="../_images/external_udp_listener.png" style="width: 340.5px; height: 237.5px;" /></a>
+<p>Next go to LTM Virtual server menu. The external listeners will apper as virtual servers.</p>
+<a class="reference internal image-reference" href="../_images/check_external_listener_in_ltm_menu.png"><img alt="../_images/check_external_listener_in_ltm_menu.png" class="align-center" src="../_images/check_external_listener_in_ltm_menu.png" style="width: 409.0px; height: 106.0px;" /></a>
+<p>Next create on each BIG-IP internal listeners via the LTM menu. The listener is a virtual server. Specify following source address range on each internal listener: 10.1.0.0/16 and apply the &#8220;internal_dns&#8221; DNS profile. Keep all other settings as default.
+Use these IP addresses:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="48%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Address</th>
+<th class="head">Port</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>10.1.10.13</td>
+<td>53</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>10.1.30.13</td>
+<td>53</td>
+</tr>
+</tbody>
+</table>
+<p>Create listeners for TCP and UDP
+Here is an example of the internal TCP Listener:</p>
+<a class="reference internal image-reference" href="../_images/internal_tcp_listener.png"><img alt="../_images/internal_tcp_listener.png" class="align-center" src="../_images/internal_tcp_listener.png" style="width: 400.0px; height: 298.0px;" /></a>
+</div>
+<div class="section" id="ltm-configuration">
+<h2>LTM Configuration<a class="headerlink" href="#ltm-configuration" title="Permalink to this headline">¶</a></h2>
+<p>Now we have to configure the LTM sectiopn of both BIG-IP&#8217;s. Since both BIG-IP&#8217;s are standalone the configuration steps has to be applied to both BIG-IP&#8217;s.</p>
+<p>First create an http profile named &#8220;http-XFF&#8221; that inserts X-Forwarded-For headers
+Local Traffic -&gt; Profiles -&gt; Services -&gt; HTTP</p>
+<a class="reference internal image-reference" href="../_images/http_XFF_profile.png"><img alt="../_images/http_XFF_profile.png" class="align-center" src="../_images/http_XFF_profile.png" style="width: 401.0px; height: 330.0px;" /></a>
+<p>In the Demo LTM is configured to use cookie persistence, insert X-Forwarded-For headers, and use Priority Groups for delivering traffic.</p>
+<p><strong>Pools</strong></p>
+<p>Create a pool &#8220;serverpool&#8221; on each BIG-IP.
+Local Traffic -&gt; Pools</p>
+<p>Assign HTTP and TCP monitors
+Enable Priority Group Activation with &#8220;1 Available Member&#8221;</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="20%" />
+<col width="6%" />
+<col width="20%" />
+<col width="20%" />
+<col width="6%" />
+<col width="21%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Device</th>
+<th class="head">Pool Member #1</th>
+<th class="head">Port</th>
+<th class="head">Priority Group</th>
+<th class="head">Pool Member #2</th>
+<th class="head">Port</th>
+<th class="head">Priority Group</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>10.1.240.10</td>
+<td>80</td>
+<td>10</td>
+<td>10.1.250.10</td>
+<td>80</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>10.1.250.10</td>
+<td>80</td>
+<td>10</td>
+<td>10.1.240.10</td>
+<td>80</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Pool config example:</p>
+<a class="reference internal image-reference" href="../_images/serverpool.png"><img alt="../_images/serverpool.png" class="align-center" src="../_images/serverpool.png" style="width: 311.0px; height: 325.5px;" /></a>
+<p><strong>Virtual Servers</strong></p>
+<p>In the next step create two standard TCP virtual servers per BIG-IP.
+One external and one internal.
+Apply the http-XFF profile, SNAT Automap and the pool &#8220;serverpool&#8221;</p>
+<p>Use following IP addresses</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="33%" />
+<col width="33%" />
+<col width="12%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Device</th>
+<th class="head">Name</th>
+<th class="head">Address</th>
+<th class="head">Port</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>external_vs</td>
+<td>10.1.10.10</td>
+<td>80</td>
+</tr>
+<tr class="row-odd"><td>bigip1</td>
+<td>internal_vs</td>
+<td>10.1.10.100</td>
+<td>80</td>
+</tr>
+<tr class="row-even"><td>bigip2</td>
+<td>external_vs</td>
+<td>10.1.30.10</td>
+<td>80</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>internal_vs</td>
+<td>10.1.30.100</td>
+<td>80</td>
+</tr>
+</tbody>
+</table>
+<p>Here a configuration example:</p>
+<a class="reference internal image-reference" href="../_images/external_vs_pt1.png"><img alt="../_images/external_vs_pt1.png" class="align-center" src="../_images/external_vs_pt1.png" style="width: 318.5px; height: 243.0px;" /></a>
+<a class="reference internal image-reference" href="../_images/external_vs_pt2.png"><img alt="../_images/external_vs_pt2.png" class="align-center" src="../_images/external_vs_pt2.png" style="width: 172.0px; height: 23.5px;" /></a>
+<a class="reference internal image-reference" href="../_images/external_vs_pt3.png"><img alt="../_images/external_vs_pt3.png" class="align-center" src="../_images/external_vs_pt3.png" style="width: 162.0px; height: 21.5px;" /></a>
+</div>
+<div class="section" id="dns-topology">
+<h2>DNS Topology<a class="headerlink" href="#dns-topology" title="Permalink to this headline">¶</a></h2>
+<p>The Demo makes use of DNS Topology to provide split-DNS and also provide traffic affinity to adjacent resources.</p>
+<p><strong>Regions</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Subnets</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>internal_network</td>
+<td>10.1.240.0/24</td>
+</tr>
+<tr class="row-odd"><td>region_1</td>
+<td>10.1.10.0/24,10.1.240.0/24</td>
+</tr>
+<tr class="row-even"><td>region_2</td>
+<td>10.1.30.0/24,10.1.250.0/24</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Records</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="13%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Source</th>
+<th class="head">is/is not</th>
+<th class="head">Destination</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>region /Common/internal_network</td>
+<td>is not</td>
+<td>pool /Common/external_pool</td>
+</tr>
+<tr class="row-odd"><td>region /Common/internal_network</td>
+<td>is</td>
+<td>pool /Common/internal_pool</td>
+</tr>
+<tr class="row-even"><td>region /Common/region_1</td>
+<td>is</td>
+<td>region /Common/region_1</td>
+</tr>
+<tr class="row-odd"><td>region /Common/region_2</td>
+<td>is</td>
+<td>region /Common/region_2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="dns-configuration">
+<h2>DNS Configuration<a class="headerlink" href="#dns-configuration" title="Permalink to this headline">¶</a></h2>
+<p><strong>Virtual Servers</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="34%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Device</th>
+<th class="head">Name</th>
+<th class="head">IP:PORT</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>bigip1</td>
+<td>external_vs</td>
+<td>10.1.10.10:80</td>
+</tr>
+<tr class="row-odd"><td>bigip1</td>
+<td>internal_vs</td>
+<td>10.1.10.100:80</td>
+</tr>
+<tr class="row-even"><td>bigip2</td>
+<td>external_vs</td>
+<td>10.1.30.10:80</td>
+</tr>
+<tr class="row-odd"><td>bigip2</td>
+<td>internal_vs</td>
+<td>10.1.30.100:80</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pools</strong></p>
+<p>These are configured with LB of Topology/Round-Robin</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="75%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Pool Members</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>external_pool</td>
+<td>bigip1:external_vs, bigip2:external_vs</td>
+</tr>
+<tr class="row-odd"><td>internal_pool</td>
+<td>bigip1:internal_vs, bigip2:internal_vs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Wide IPs</strong></p>
+<p>These are configured with LB of Topology</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="48%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Pools</th>
+<th class="head">Last Resort pool</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>www.f5demo.com</td>
+<td>external_pool, internal_pool</td>
+<td>external_pool</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../lab3/scripted.html" class="btn btn-neutral float-right" title="F5 Python SDK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../lab1/connecting.html" class="btn btn-neutral" title="Connecting to UDF 2.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Eric Chen.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
