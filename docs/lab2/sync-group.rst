@@ -226,7 +226,36 @@ Local Traffic -> Profiles -> Services -> HTTP
 
 In the Demo LTM is configured to use cookie persistence, insert X-Forwarded-For headers, and use Priority Groups for delivering traffic.
 
+
+**Pools**
+
+Create a pool "serverpool" on each BIG-IP. 
+Local Traffic -> Pools
+
+Assign HTTP and TCP monitors 
+Enable Priority Group Activation with "1 Available Member"
+
+
+======  ============== ==== ==============  ============== ==== ===============
+Device  Pool Member #1 Port Priority Group  Pool Member #2 Port Priority Group
+======  ============== ==== ==============  ============== ==== ===============
+bigip1  10.1.240.10     80      10          10.1.250.10     80      0
+bigip2  10.1.250.10     80      10          10.1.240.10     80      0
+======  ============== ==== ==============  ============== ==== ===============
+
+Pool config example:
+
+.. image:: serverpool.png
+   :scale: 50%
+   :align: center
+
 **Virtual Servers**
+
+In the next step create two standard TCP virtual servers per BIG-IP.
+One external and one internal. 
+Apply the http-XFF profile, SNAT Automap and the pool "serverpool"
+
+Use following IP addresses
 
 ======= =========== =========== ==== 
 Device  Name        Address     Port 
@@ -237,22 +266,130 @@ bigip2  external_vs 10.1.30.10   80
 bigip2  internal_vs 10.1.30.100  80  
 ======= =========== =========== ==== 
 
-**Pools**
+Here a configuration example:
 
-======  ==============  ==============  ============== ===============
-Device  Pool Member #1  Priority Group  Pool Member #2 Priority Group
-======  ==============  ==============  ============== ===============
-bigip1  10.1.240.10      10              10.1.250.10    0
-bigip2  10.1.250.10      10              10.1.240.10    0
-======  ==============  ==============  ============== ===============
+.. image:: external_vs_pt1.png
+   :scale: 50%
+   :align: center
+
+.. image:: external_vs_pt2.png
+   :scale: 50%
+   :align: center
+   
+.. image:: external_vs_pt3.png
+   :scale: 50%
+   :align: center
+
+
 
 
 DNS Topology
 ------------
 
-The Demo makes use of DNS Topology to provide split-DNS and also provide traffic affinity to adjacent resources.
+After BIG-IP DNS and BIG-IP LTM are configured and ready to run, it is time to create the logical geographical load balancing.
+BIG-IP DNS will receive DNS requests and respond based on the location of the requesting IP.
 
-**Regions**
+The demo will show two sections:
+
+1. Split DNS: BIG-IP DNS will respond to internal clients with private IP addresses differently than for external clients with IP addresses that are not internal.
+2. regional Loadbalancing - based on the region of the client IP the response will be different.
+	Note: we will simulate the requin with a private IP address range, because this lab is not exposed to the Internet.
+	
+The steps to create geolocation based load balancing on BIG-IP DNS are:
+
+1. add the virtual servers
+2. create the pools
+3. create wide-IPs
+4. create regions
+5. create records
+
+All configurations have to be applied one BIG-IP DNS only. The config changes will be synced to the other BIG-IP DNS via a sync group that was created before.
+
+**Step 1: Virtual Servers**
+
+BIG-IP DNS has to be aware of the services that are provided by BIG-IP LTM.
+BIG-IP DNS sees BIG-IP LTM as a Server that is bound to a datacenter. 
+For BIG-IP DNS the virtual servers on the BIG-IP LTM are virtual servers on the server in the datacenter.
+
+Create the virtual servers on BIG-IP DNS under:
+
+DNS -> GSLB -> Servers
+
+Use following IP addresses for the virtual servers: 
+
+====== =========== ===============  ==============
+Device Name        IP:PORT			Health Monitor
+====== =========== ===============  ==============
+bigip1 external_vs 10.1.10.10:80		bigip
+bigip1 internal_vs 10.1.10.100:80 		bigip
+bigip2 external_vs 10.1.30.10:80		bigip
+bigip2 internal_vs 10.1.30.100:80		bigip
+====== =========== ===============  ==============
+
+Here an example:
+
+.. image:: bigip_dns_vs_config.png
+   :scale: 50%
+   :align: center
+
+
+**Step 2: Pools** 
+
+The next step is to configure the pool.
+under: DNS -> GSLB -> Pools
+
+Configure two pools (internal_pool and external_pool) with following load balancing methods:
+* Preferred: Topology
+* Alternate: Round-Robin
+* Fallback: none
+
+use following settings:
+
+=============  ====   =======================================
+Name           Type		Pool Members
+=============  ====   =======================================
+external_pool	 A	   bigip1:external_vs, bigip2:external_vs
+internal_pool	 A	   bigip1:internal_vs, bigip2:internal_vs
+=============  ====   =======================================
+
+
+Here an example:
+
+.. image:: DNS_pool_creation_pt1.png
+   :scale: 50%
+   :align: center
+
+.. image:: DNS_pool_creation_pt2.png
+   :scale: 50%
+   :align: center
+
+
+**Step 3: Wide IPs**
+
+The next step is to configure the Wide IP.
+under: DNS -> GSLB -> Wide IPs
+
+use following settings and Topology as load balancing method
+
+===================== ==== ================================== ================
+Name                  Type	Pools                              Last Resort pool
+===================== ==== ================================== ================
+www.f5demo.com         A    external_pool, internal_pool       external_pool
+===================== ==== ================================== ================
+
+Here an example:
+
+.. image:: DNS_wide_IP.png
+   :scale: 50%
+   :align: center
+
+
+**Step 4: Regions**
+
+The next step is to define regions that will be used by topology records.
+under DNS -> GSLB -> Topology -> Regions
+
+Use following IP addresses:
 
 ================ ==========================
 Name             Subnets
@@ -262,7 +399,20 @@ region_1         10.1.10.0/24,10.1.240.0/24
 region_2         10.1.30.0/24,10.1.250.0/24
 ================ ==========================
 
-**Records**
+Here an example:
+
+.. image:: regions_internal_subnet.png
+   :scale: 50%
+   :align: center
+
+
+**Step 5: Records**
+
+The last step is to define the topology records, that BIG-IP DNS will use for load balancing decisions
+under DNS -> GSLB -> Topology -> Records
+
+ 
+use following settings
 
 =============================== =========  =============================
 Source                          is/is not  Destination
@@ -273,37 +423,51 @@ region /Common/region_1         is         region /Common/region_1
 region /Common/region_2         is         region /Common/region_2
 =============================== =========  =============================
 
-DNS Configuration
------------------
+Verifying configuration
+-----------------------
 
-**Virtual Servers**
 
-====== =========== ===============
-Device Name        IP:PORT
-====== =========== ===============
-bigip1 external_vs 10.1.10.10:80
-bigip1 internal_vs 10.1.10.100:80
-bigip2 external_vs 10.1.30.10:80
-bigip2 internal_vs 10.1.30.100:80
-====== =========== ===============
+Testing Internal Connections
+-----------------------------
 
-**Pools** 
+Now it is time to test if your configuration works.
 
-These are configured with LB of Topology/Round-Robin
+Now run the "Test Server1" link.
 
-============= =======================================
-Name          Pool Members
-============= =======================================
-external_pool bigip1:external_vs, bigip2:external_vs
-internal_pool bigip1:internal_vs, bigip2:internal_vs
-============= =======================================
+.. image:: test-server1-run.png
+   :scale: 50%
+   :align: center
 
-**Wide IPs**
+and run the "Test server2" link.
 
-These are configured with LB of Topology
+.. image:: test-server2-run.png
+   :scale: 50%
+   :align: center
 
-===================== ================================== ================
-Name                  Pools                              Last Resort pool
-===================== ================================== ================
-www.f5demo.com        external_pool, internal_pool       external_pool
-===================== ================================== ================
+The "test-server[1-2]" links are simulating requests from internal clients.  
+Note that BIG-IP DNS is configured to prefer requests to the same Data Center.
+
+**Question** Can you explain how this is being done?
+
+
+Testing External Connections
+----------------------------
+
+Find the "Test External" link.
+
+.. image:: test-external.png
+   :align: center   
+   
+Double-click on it and you should see:
+
+.. image:: test-external-run.png
+   :scale: 50%
+   :align: center
+
+The "Test External" link is simulating requests from an external client.  BIG-IP DNS is configured to use round-robin load balancing between the two backend servers.
+
+From Google Chrome find the link for "www.f5demo.com".  The Windows Desktop client is configured to act like an external client.
+
+**Question** Using Google Chrome the requests will always go back to the same server, why?
+
+
