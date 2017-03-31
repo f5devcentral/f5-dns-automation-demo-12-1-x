@@ -198,3 +198,12 @@ Optional Exercises
 Changing the requirements
 -------------------------
 
+Can you change the behavior to the following:
+
+ #. External requests will not persist to the same backend server (still round-robin, Hint: one change to each external LTM Virtual Server)
+ #. Flip the affinity of the internal requests (could be done via either LTM/DNS)
+ 
+ Automating the change
+ ---------------------
+ The second change "flipping the affinity" can be done via changing the automation script to change how the LTM Virtual Servers are deployed.  Reset the deployment and deploy with an updated deployment that implements that change.
+
