@@ -423,6 +423,51 @@ region /Common/region_1         is         region /Common/region_1
 region /Common/region_2         is         region /Common/region_2
 =============================== =========  =============================
 
-DNS Configuration
------------------
+Verifying configuration
+-----------------------
+
+
+Testing Internal Connections
+-----------------------------
+
+Now it is time to test if your configuration works.
+
+Now run the "Test Server1" link.
+
+.. image:: test-server1-run.png
+   :scale: 50%
+   :align: center
+
+and run the "Test server2" link.
+
+.. image:: test-server2-run.png
+   :scale: 50%
+   :align: center
+
+The "test-server[1-2]" links are simulating requests from internal clients.  
+Note that BIG-IP DNS is configured to prefer requests to the same Data Center.
+
+**Question** Can you explain how this is being done?
+
+
+Testing External Connections
+----------------------------
+
+Find the "Test External" link.
+
+.. image:: test-external.png
+   :align: center   
+   
+Double-click on it and you should see:
+
+.. image:: test-external-run.png
+   :scale: 50%
+   :align: center
+
+The "Test External" link is simulating requests from an external client.  BIG-IP DNS is configured to use round-robin load balancing between the two backend servers.
+
+From Google Chrome find the link for "www.f5demo.com".  The Windows Desktop client is configured to act like an external client.
+
+**Question** Using Google Chrome the requests will always go back to the same server, why?
+
 
