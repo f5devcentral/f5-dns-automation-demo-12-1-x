@@ -42,6 +42,11 @@ Configuring BIG-IP DNS
 
 The following will go through the basic steps of setting up BIG-IP DNS.
 
+.. _gui_enable_sync:
+
+Enabling DNS Sync
+-----------------
+
 First go to DNS -> Settings -> GSLB -> General
 
 Find the "Synchronize" checkbox and click on it.
@@ -50,6 +55,11 @@ Find the "Synchronize" checkbox and click on it.
    :scale: 50%
    :align: center
 
+.. _gui_add_datacenter:
+
+Add Data Center
+---------------
+
 Next go back to DNS -> GSLB -> Data Centers
 
 Create a Data Center (DC) named SUBNET_10 and SUBNET_30.
@@ -57,6 +67,11 @@ Create a Data Center (DC) named SUBNET_10 and SUBNET_30.
 .. image:: add-datacenter.png
    :scale: 50%
    :align: center
+
+.. _gui_add_server:
+
+Add Server
+----------
 
 Next go to DNS->GSLB->Servers
 
@@ -73,6 +88,10 @@ bigip2   10.1.30.240    SUBNET_30
    :scale: 50%
    :align: center
 
+.. _gui_gtm_add:
+
+Syncing BIG-IP DNS
+------------------
 
 At this point BIG-IP 1 has the desired BIG-IP DNS configuration, but it needs to be synced with BIG-IP 2.
 
@@ -123,22 +142,13 @@ Optional Exercises
 
 The full automation will also perform the following.
 
+.. _gui_dns_cache:
+
+
 DNS Cache
 ---------
 
 In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS cache named "dns_cache".
-
-DNS Profiles
-------------
-
-Two DNS profiles are required. One for providing a resolving DNS server and one for external DNS requests (bad idea to have an open resolver on the internet). Now create them on both BIG-IP's.
-
-Under DNS -> Delivery -> Profiles -> DNS:
-Create a profile named "external_dns" that only provides GSLB and disables fallback to BIND.
-
-.. image:: external_dns_profile.png
-   :scale: 50%
-   :align: center
 
 Under DNS -> Caches -> Cache List:
 Create a DNS cache profile "internal_cache" and accept default values.
@@ -147,6 +157,31 @@ Create a DNS cache profile "internal_cache" and accept default values.
    :scale: 50%
    :align: center
    
+.. _gui_dns_profile:
+
+DNS Profiles
+------------
+
+Two DNS profiles are required. One for providing a resolving DNS server and one for external DNS requests (bad idea to have an open resolver on the internet). Now create them on both BIG-IP's.
+
+.. _gui_external_dns_profile:
+
+External DNS Profile
+^^^^^^^^^^^^^^^^^^^^
+
+Under DNS -> Delivery -> Profiles -> DNS:
+Create a profile named "external_dns" that only provides GSLB and disables fallback to BIND.
+
+.. image:: external_dns_profile.png
+   :scale: 50%
+   :align: center
+
+
+.. _gui_internal_dns_profile:
+
+Internal DNS Profile
+^^^^^^^^^^^^^^^^^^^^
+
 Under DNS -> Delivery -> Profiles -> DNS:
 Create a profile named "internal_dns" that enables a DNS cache for resolving names.
 
@@ -154,6 +189,7 @@ Create a profile named "internal_dns" that enables a DNS cache for resolving nam
    :scale: 50%
    :align: center
 
+.. _gui_dns_listeners:
 
 DNS Listeners
 -------------
@@ -168,6 +204,11 @@ Name   Address    Port
 bigip1 10.1.10.13 53
 bigip2 10.1.30.13 53
 ====== ========== =====
+
+.. _gui_external_dns_listener:
+
+External DNS Listener
+^^^^^^^^^^^^^^^^^^^^^
 
 DNS -> Delivery -> Listeners
 Here the external TCP listener
@@ -187,6 +228,11 @@ Next go to LTM Virtual server menu. The external listeners will apper as virtual
 .. image:: check_external_listener_in_ltm_menu.png
    :scale: 50%
    :align: center
+
+.. _gui_internal_dns_listener:
+
+Internal DNS Listener
+^^^^^^^^^^^^^^^^^^^^^
 
 Next create on each BIG-IP internal listeners via the LTM menu. The listener is a virtual server. Specify following source address range on each internal listener: 10.1.0.0/16 and apply the "internal_dns" DNS profile. Keep all other settings as default.
 Use these IP addresses:
@@ -211,10 +257,12 @@ Here is an example of the internal TCP Listener:
 
  For the demo all requests go through the internal listener, but in another environment you could split this out.
 
+.. _gui_ltm:
+
 LTM Configuration
 ------------------
 
-Now we have to configure the LTM sectiopn of both BIG-IP's. Since both BIG-IP's are standalone the configuration steps has to be applied to both BIG-IP's.
+Now we have to configure the LTM section of both BIG-IP's. Since both BIG-IP's are standalone the configuration steps has to be applied to both BIG-IP's.
 
 First create an http profile named "http-XFF" that inserts X-Forwarded-For headers 
 Local Traffic -> Profiles -> Services -> HTTP
@@ -281,7 +329,7 @@ Here a configuration example:
    :align: center
 
 
-
+.. _gui_dns_topology:
 
 DNS Topology
 ------------
@@ -305,7 +353,10 @@ The steps to create geolocation based load balancing on BIG-IP DNS are:
 
 All configurations have to be applied one BIG-IP DNS only. The config changes will be synced to the other BIG-IP DNS via a sync group that was created before.
 
+.. _gui_dns_vs:
+
 **Step 1: Virtual Servers**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 BIG-IP DNS has to be aware of the services that are provided by BIG-IP LTM.
 BIG-IP DNS sees BIG-IP LTM as a Server that is bound to a datacenter. 
@@ -332,8 +383,10 @@ Here an example:
    :scale: 50%
    :align: center
 
+.. _gui_dns_pool:
 
 **Step 2: Pools** 
+^^^^^^^^^^^^^^^^^
 
 The next step is to configure the pool.
 under: DNS -> GSLB -> Pools
@@ -363,8 +416,10 @@ Here an example:
    :scale: 50%
    :align: center
 
+.. _gui_dns_wideip:
 
 **Step 3: Wide IPs**
+^^^^^^^^^^^^^^^^^^^^
 
 The next step is to configure the Wide IP.
 under: DNS -> GSLB -> Wide IPs
@@ -383,8 +438,10 @@ Here an example:
    :scale: 50%
    :align: center
 
+.. _gui_dns_region:
 
-**Step 4: Regions**
+**Step 4: Topology Regions**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The next step is to define regions that will be used by topology records.
 under DNS -> GSLB -> Topology -> Regions
@@ -406,7 +463,10 @@ Here an example:
    :align: center
 
 
-**Step 5: Records**
+.. _gui_dns_topology_records:
+
+**Step 5: Topology Records**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The last step is to define the topology records, that BIG-IP DNS will use for load balancing decisions
 under DNS -> GSLB -> Topology -> Records
