@@ -46,8 +46,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'F5 DNS Automation Demo 12.1.x'
-copyright = u'2017, Eric Chen'
-author = u'Eric Chen'
+copyright = u'2017, Eric Chen, Vladimir Bojkovic'
+author = u'Eric Chen, Vladimir Bojkovic'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -128,7 +128,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'F5DNSAutomationDemo121x.tex', u'F5 DNS Automation Demo 12.1.x Documentation',
-     u'Eric Chen', 'manual'),
+     u'Eric Chen, Vladimir Bojkovic', 'manual'),
 ]
 
 

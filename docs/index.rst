@@ -48,6 +48,21 @@ During Lab  3 we will utilize the F5 Python SDK to script the steps that
 were previously performed manually.  The Application Services iApp will
 also be leveraged to provide Service Catalog of L4-L7 services.
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Lab 4: Using Jenkins to Orchestrate
+
+   lab4/lab4_guide.rst
+
+In Lab 3 we launched the automation scripts via ssh/shell scripts.  During this
+lab we will utilize Jenkins to perform the automation steps.  
+
+Jenkins can provide a more standard way of deploying and monitoring the health 
+of automated workflows.
+
+The goal of this lab is to demonstrate how complex automation tasks can be hidden behind a generic automation engine. 
+In this case the deployment is in UDF 2.0. Running through the Lab demonstrates how easy it is to change the destination 
+to AWS or Azure or private cloud environments with keeping the shim layer unchanged.
 
 Indices and tables
 ==================

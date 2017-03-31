@@ -1,18 +1,13 @@
 F5 DNS Automation Demo
 ======================
 
-The following is an example of using the F5 Python SDK to automate
-the process outlined in the following article.  
-
-DevCentral article: [DNS based failover between AWS Availability Zones and Split DNS](https://devcentral.f5.com/articles/dns-based-failover-between-aws-availability-zones-and-split-dns)
-
-*WORK IN PROGRESS!!!*
-
 ### About
 
-* aws: AWS Example
-* lib/bgip_dns_helper.py: Script that helps with BIG-IP DNS module
-* f5-udf-2.0: F5 Internal UDF Envivironment
+Documentation can be found at:
+
+  http://f5-dns-automation-demo-12-1-x.readthedocs.io
+
+This is [F5 Contributed Software](https://support.f5.com/csp/article/K80012344)
 
 ### Requirements
    Python 2.7
@@ -24,3 +19,5 @@ DevCentral article: [DNS based failover between AWS Availability Zones and Split
 ### Authored By
 
 [Eric Chen](https://devcentral.f5.com/users/123940) | [@chen23](https://github.com/chen23)
+
+Vladimir Bojkovic | [@vbojko](https://github.com/vbojko)

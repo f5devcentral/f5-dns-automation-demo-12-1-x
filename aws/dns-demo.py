@@ -1,18 +1,20 @@
 #!/usr/bin/python
 import boto3
 import json
-import sys
-from pprint import pprint
 import os
-from optparse import OptionParser
+import sys
 
 sys.path.insert(0, os.path.abspath('../lib'))
 
+from pprint import pprint
+from optparse import OptionParser
 from bigip_dns_helper import DnsHelper
 import logging
+import time
 
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('dns_demo')
-logging.basicConfig()
 logger.setLevel(logging.DEBUG)
 
 def create_eni(primary_stack_eni, secondary_stack_eni):
@@ -31,12 +33,22 @@ class Demo(object):
 
 
         # primary
-        resp = self.cloudformation.describe_stacks(StackName=primary_stack)
-        outputs = dict([(a['OutputKey'],a['OutputValue']) for a in resp['Stacks'][0]['Outputs']])
-        self.primary_instance_id = outputs['Bigip1InstanceId']
-        self.primary_instance = self.ec2.Instance(self.primary_instance_id)
+        primary_resp = self.cloudformation.describe_stacks(StackName=primary_stack)
+        self.primary_stack_status = primary_resp['Stacks'][0]['StackStatus']
+
         # secondary
         resp = self.cloudformation.describe_stacks(StackName=secondary_stack)
+        self.secondary_stack_status = resp['Stacks'][0]['StackStatus']
+
+        if self.primary_stack_status == 'CREATE_IN_PROGRESS' or self.secondary_stack_status == 'CREATE_IN_PROGRESS':
+            print 'CREATE_IN_PROGRESS'
+            return
+
+        outputs = dict([(a['OutputKey'],a['OutputValue']) for a in primary_resp['Stacks'][0]['Outputs']])
+        self.primary_instance_id = outputs['Bigip1InstanceId']
+        self.primary_instance = self.ec2.Instance(self.primary_instance_id)
+
+
         outputs = dict([(a['OutputKey'],a['OutputValue']) for a in resp['Stacks'][0]['Outputs']])
         self.secondary_instance_id = outputs['Bigip1InstanceId']
         self.secondary_instance = self.ec2.Instance(self.secondary_instance_id)
@@ -50,6 +62,9 @@ class Demo(object):
         self.primary_eni_1 = filter(lambda a: a.attachment['DeviceIndex'] == 1, self.primary_instance.network_interfaces)[0]
         self.secondary_eni_1 = filter(lambda a: a.attachment['DeviceIndex'] == 1, self.secondary_instance.network_interfaces)[0]
 
+        self.primary_eni_1_sg =  self.ec2.SecurityGroup(self.primary_eni_1.groups[0]['GroupId'])
+        self.secondary_eni_1_sg =  self.ec2.SecurityGroup(self.secondary_eni_1.groups[0]['GroupId'])
+
         self.primary_selfip = self.primary_dev[1][0][0]
         self.primary_selfip_eip = self.primary_dev[1][0][1]
         self.secondary_selfip = self.secondary_dev[1][0][0]
@@ -58,25 +73,32 @@ class Demo(object):
         self.primary_dns_listener = self.primary_dev[1][1][0]
         self.secondary_dns_listener = self.secondary_dev[1][1][0]
 
-        self.primary_ltm_vs1  = self.primary_dev[1][2][0]
-        self.secondary_ltm_vs1 = self.secondary_dev[1][2][0]
+#        self.primary_ltm_vs1  = self.primary_dev[1][2][0]
+#        self.secondary_ltm_vs1 = self.secondary_dev[1][2][0]
 
-        self.primary_ltm_vs1_eip  = self.primary_dev[1][2][1]
-        self.secondary_ltm_vs1_eip = self.secondary_dev[1][2][1]
+        self.primary_ltm_vs1  = self.primary_dns_listener
+        self.secondary_ltm_vs1 = self.secondary_dns_listener
 
-        self.primary_ltm_vs2  = self.primary_dev[1][3][0]
-        self.secondary_ltm_vs2 = self.secondary_dev[1][3][0]
+#        self.primary_ltm_vs1_eip  = self.primary_dev[1][2][1]
+#        self.secondary_ltm_vs1_eip = self.secondary_dev[1][2][1]
+
+        self.primary_ltm_vs1_eip  = self.primary_dev[1][1][1]
+        self.secondary_ltm_vs1_eip = self.secondary_dev[1][1][1]
+
+#        self.primary_ltm_vs2  = self.primary_dev[1][3][0]
+#        self.secondary_ltm_vs2 = self.secondary_dev[1][3][0]
 
 
 
         self.primary_dc =  self.primary_instance.placement['AvailabilityZone']
         self.secondary_dc =  self.secondary_instance.placement['AvailabilityZone']
 
+
         self.dns_helper = DnsHelper(self.primary_mgmt_ip, 'admin', password, 
-                               self.secondary_mgmt_ip, 'admin', password)
+                               peer_host=self.secondary_mgmt_ip, peer_username='admin', peer_password=password)
 
         self.dns_helper_peer = DnsHelper(self.secondary_mgmt_ip, 'admin', self.password, 
-                                    self.primary_mgmt_ip, 'admin', self.password)
+                                    peer_host=self.primary_mgmt_ip, peer_username='admin', peer_password=self.password)
 
 
 
@@ -128,8 +150,15 @@ class Demo(object):
 
     def gtm_add(self):
         logger.debug('setup_dns: gtm_add started')        
+        # allow IP to go through
+
+        self.primary_eni_1_sg.authorize_ingress(IpProtocol='tcp',CidrIp='%s/32' %(self.secondary_selfip_eip),FromPort=22,ToPort=22)
+        self.primary_eni_1_sg.authorize_ingress(IpProtocol='tcp',CidrIp='%s/32' %(self.secondary_selfip_eip),FromPort=4353,ToPort=4353)
+        self.primary_eni_1_sg.authorize_ingress(IpProtocol='tcp',CidrIp='%s/32' %(self.primary_selfip_eip),FromPort=4353,ToPort=4353)
+        time.sleep(3)
         self.dns_helper_peer.gtm_add(self.primary_selfip_eip, self.primary_selfip)
         logger.debug('setup_dns: gtm_add complete')        
+        self.primary_eni_1_sg.revoke_ingress(IpProtocol='tcp',CidrIp='%s/32' %(self.secondary_selfip_eip),FromPort=22,ToPort=22)
         # setup DNS 
 
     def setup_dns2(self):
@@ -181,27 +210,25 @@ class Demo(object):
 
 
     def deploy_vs1_dns(self):
-        dns_helper = DnsHelper(self.primary_mgmt_ip, 'admin', password, 
-                               self.secondary_mgmt_ip, 'admin', password)
 
-        dns_helper.create_vs(self.primary_stack, "sample_ext_vs", "%s:80" %self.primary_ltm_vs1_eip, "%s:80" %self.primary_ltm_vs1)
-        dns_helper.create_vs(self.primary_stack, "sample_int_vs", "%s:80" %self.primary_ltm_vs1, "%s:80" %self.primary_ltm_vs1)
+        self.dns_helper.create_vs(self.primary_stack, "sample_ext_vs", "%s:80" %self.primary_ltm_vs1_eip, "%s:80" %self.primary_ltm_vs1)
+        self.dns_helper.create_vs(self.primary_stack, "sample_int_vs", "%s:80" %self.primary_ltm_vs1, "%s:80" %self.primary_ltm_vs1)
 
-        dns_helper.create_vs(self.secondary_stack, "sample_ext_vs", "%s:80" %self.secondary_ltm_vs1_eip, "%s:80" %self.secondary_ltm_vs1)
-        dns_helper.create_vs(self.secondary_stack, "sample_int_vs", "%s:80" %self.secondary_ltm_vs1, "%s:80" %self.secondary_ltm_vs1)
+        self.dns_helper.create_vs(self.secondary_stack, "sample_ext_vs", "%s:80" %self.secondary_ltm_vs1_eip, "%s:80" %self.secondary_ltm_vs1)
+        self.dns_helper.create_vs(self.secondary_stack, "sample_int_vs", "%s:80" %self.secondary_ltm_vs1, "%s:80" %self.secondary_ltm_vs1)
 
-        dns_helper.create_pool("sample_ext_pool")
-        dns_helper.create_pool_members("sample_ext_pool",["%s:sample_ext_vs" %(self.primary_stack),
+        self.dns_helper.create_pool("sample_ext_pool")
+        self.dns_helper.create_pool_members("sample_ext_pool",["%s:sample_ext_vs" %(self.primary_stack),
                                                           "%s:sample_ext_vs" %(self.secondary_stack)])
 
-        dns_helper.create_pool("sample_int_pool")
-        dns_helper.create_pool_members("sample_int_pool",["%s:sample_int_vs" %(self.primary_stack),
+        self.dns_helper.create_pool("sample_int_pool")
+        self.dns_helper.create_pool_members("sample_int_pool",["%s:sample_int_vs" %(self.primary_stack),
                                                           "%s:sample_int_vs" %(self.secondary_stack)])
 
-        dns_helper.create_topology_record("ldns: region /Common/vpc-cidr-block server: pool /Common/%s" %("sample_int_pool"))
-        dns_helper.create_topology_record("ldns: not region /Common/vpc-cidr-block server: pool /Common/%s" %("sample_ext_pool"))
+        self.dns_helper.create_topology_record("ldns: region /Common/vpc-cidr-block server: pool /Common/%s" %("sample_int_pool"))
+        self.dns_helper.create_topology_record("ldns: not region /Common/vpc-cidr-block server: pool /Common/%s" %("sample_ext_pool"))
         # ldns: region /Common/us-east-1d server: region /Common/us-east-1d
-        dns_helper.create_wideip("sample.f5demo.com",["sample_ext_pool","sample_int_pool"])
+        self.dns_helper.create_wideip("sample.f5demo.com",["sample_ext_pool","sample_int_pool"])
 
 if __name__ == "__main__":
    parser = OptionParser()
@@ -230,6 +257,9 @@ if __name__ == "__main__":
        demo.deploy_secondary_vs1(options.password_file, options.pool_members)
    elif options.action == 'deploy_vs1_dns':
        demo.deploy_vs1_dns()
-
-
-       
+   elif options.action == 'wait_for_stack':
+       while demo.primary_stack_status == 'CREATE_IN_PROGRESS' or demo.secondary_stack_status == 'CREATE_IN_PROGRESS':
+           import time
+           time.sleep(3)
+           demo = Demo(options.primary_stack, options.secondary_stack, password)
+           print 'waiting'
