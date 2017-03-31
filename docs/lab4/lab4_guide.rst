@@ -15,8 +15,8 @@ This will be done without touching the BIG-IPs after the default config is loade
 The goal of this lab is to demonstrate how complex automation tasks can be hidden behind a generic automation engine.
 In this case the deployment is in UDF 2.0. Running through the Lab demonstrates how easy it is to change the destination to AWS or Azure or private cloud environments with keeping the shim layer unchanged.
 
-Step 0
-======
+Step 0 - cleaning the BIg-IP's
+==============================
 
 This step is to cleanup the BIG-IP config that was created in Lab 2 and 3.
 RDP into the Windows jump host.
@@ -41,8 +41,10 @@ after the system is in active state again save the default config with
 
 
 
-Step 1
-======
+Step 1 - login into Jenkins
+===========================
+
+This step demonstrates how to login into Jenkins and find the deployment folder.
 
 After both BIG-IP are active again open Chrome in the RDP Session and click on the Jenkins link.
 
@@ -67,7 +69,12 @@ In the UDF demo folder there are several Projects from job 0 to job 3.
    :scale: 50%
    :align: center
    
-In the nexxt steps these Jobs wil be build and the result verified.   
+In the next steps these Jobs wil be build and the result verified.   
+
+Step 2 - deploying F5 config via automation scripts using Jenkins
+================================================================= 
+
+The config deployment is split into multiple steps.
 
 **Job 0**
 
@@ -81,7 +88,12 @@ In order to run the project click on the left side the "Build Now" link.
    :scale: 50%
    :align: center
    
-Note that at the left side the "Buildung History" lit adds a new build.
+Note that at the left side the "Buildung History" list adds a new build.
+
+.. image:: build_history.png
+   :scale: 50%
+   :align: center
+
 Click at the new build number.
 In the next screen there is a link called "Console Output"
 
