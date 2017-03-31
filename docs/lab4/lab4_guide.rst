@@ -127,7 +127,7 @@ there are multiple ways to build a project. In this case click on the "Build On"
 **Question** What is the console status after the Job completed?
 
 
-**Job 2a and 2b **
+**Job 2a and 2b**
 
 The task of Job 2a and 2b is to send the reset scripts from lab 2 and lab3 to the BIG-IP's.
 
