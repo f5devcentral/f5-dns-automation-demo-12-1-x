@@ -15,30 +15,27 @@ This will be done without touching the BIG-IPs after the default config is loade
 The goal of this lab is to demonstrate how complex automation tasks can be hidden behind a generic automation engine.
 In this case the deployment is in UDF 2.0. Running through the Lab demonstrates how easy it is to change the destination to AWS or Azure or private cloud environments with keeping the shim layer unchanged.
 
-Step 0 - cleaning the BIg-IP's
-==============================
+Step 0 - Restoring the BIG-IP Configuration
+===========================================
 
 This step is to cleanup the BIG-IP config that was created in Lab 2 and 3.
 RDP into the Windows jump host.
-Open two Putty session and login to BIG-IP 1 and BIG-IP 2. Use the admin credentials from the previous labs.
 
-Reset both BIG-IP to factory default
-Use these commands:
+Reset both BIG-IP to be the same state as after Lab 1.
 
-**CLI example**
+Find the "Resetting" links on the Desktop.
 
-.. code-block:: none
+.. image:: ../lab1/resetting-links.png
+   :scale: 75%
+   :align: center
 
-	load /sys config default
+Double-click on both of these and you should see a window appear briefly like the following.
 
-after the system is in active state again save the default config with
+.. image:: ../lab1/resetting-bigip.png
+   :scale: 50%
+   :align: center
 
-**CLI example**
-
-.. code-block:: none
-
-	save /sys config
-
+Verify that you no longer see the changes that were previously deployed.
 
 
 Step 1 - login into Jenkins
