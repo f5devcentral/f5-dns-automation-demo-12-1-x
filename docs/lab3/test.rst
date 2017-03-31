@@ -200,8 +200,8 @@ Changing the requirements
 
 Can you change the behavior to the following:
 
- * External requests will not persist to the same backend server (still round-robin, Hint: one change to each external LTM Virtual Server)
- * Flip the affinity of the internal requests (could be done via either LTM/DNS)
+ #. External requests will not persist to the same backend server (still round-robin, Hint: one change to each external LTM Virtual Server)
+ #. Flip the affinity of the internal requests (could be done via either LTM/DNS)
  
  Automating the change
  ---------------------
