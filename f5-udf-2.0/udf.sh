@@ -24,7 +24,7 @@ python bigip_dns_helper.py --host=10.1.1.7  --action create_external_dns_listene
 python bigip_dns_helper.py --host=10.1.1.8  --action create_external_dns_listener --listener_ip 10.1.30.13
 
 python bigip_dns_helper.py --host=10.1.1.7  --action create_internal_dns_listener --listener_ip 10.1.10.13 --internal_network 10.1.0.0/16
-python bigip_dns_helper.py --host=10.1.1.8  --action create_internal_dns_listener --listener_ip 10.1.10.13 --internal_network 10.1.0.0/16
+python bigip_dns_helper.py --host=10.1.1.8  --action create_internal_dns_listener --listener_ip 10.1.30.13 --internal_network 10.1.0.0/16
 
 
 python bigip_dns_helper.py --host=10.1.1.7 --action save_config
