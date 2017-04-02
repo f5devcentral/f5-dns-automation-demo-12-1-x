@@ -137,10 +137,12 @@ In Chrome login to BIG-IP 2 and you should see that it is now synced.
 
 You should have a pair of BIG-IP devices that are in a DNS Sync Group.  The next lab will go through the process of scripting these actions.
 
+You are now ready to start the next Lab: :doc:`../lab3/scripted`
+
 Optional Exercises
 ===================
 
-The full automation will also perform the following.
+The following next lab, :doc:`../lab3/scripted`,  will perform all of the following sections via an automation script.  You can choose to perform all of these tasks to understand what the automation will be performing, but at the end of this lab you will delete the work that you have done.  
 
 .. _gui_dns_cache:
 
@@ -148,7 +150,7 @@ The full automation will also perform the following.
 DNS Cache
 ---------
 
-In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS cache named "dns_cache".
+In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS cache named "dns_cache".  This needs to be done separately on each BIG-IP device.  
 
 Under DNS -> Caches -> Cache List:
 Create a DNS cache profile "internal_cache" and accept default values.
@@ -451,7 +453,7 @@ Use following IP addresses:
 ================ ==========================
 Name             Subnets
 ================ ==========================
-internal_network 10.1.240.0/24
+internal_network 10.1.240.0/20
 region_1         10.1.10.0/24,10.1.240.0/24
 region_2         10.1.30.0/24,10.1.250.0/24
 ================ ==========================
