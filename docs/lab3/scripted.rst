@@ -3,7 +3,7 @@ F5 Python SDK
 
 The F5 Python SDK provides an interface to the iControl REST interface.
 
-This provides the ability to translate from actions that you would have normally done via the GUI to actions that can be performed from Python.
+This provides the ability to translate actions that you would have normally done via the GUI to actions that can be performed from Python.
 
 **Via GUI**
 
@@ -28,9 +28,11 @@ This Lab will combine the process of creating a BIG-IP DNS deployment in Lab 2 a
    python bigip_dns_helper.py --host=10.1.1.7 \
    --action add_datacenter --datacenter SUBNET_10
 
-In this example we have created a Data Center (DC) named "SUBNET_10" using the F5 Python SDK example from before.  For Python nerds the related code to invoke this from the CLI.
+In this example we have created a Data Center (DC) named "SUBNET_10" using the F5 Python SDK example from before.  
 
 A full description of sample inputs (taken from this lab) can be found at the end of this lab in the Lab Appendix.  :ref:`the_script`
+
+For Python nerds; the pseudo code to invoke this from the CLI:
 
 **Python Pseudo Code**
 
@@ -88,7 +90,7 @@ The script is currently configured to output all the REST calls making for a ver
    :scale: 50%
    :align: center
 
-A copy of the script that performs Lab 2 (create a DNS Sync Group):
+An excerpt of the script that performs Lab 2 (create a DNS Sync Group):
 
 .. code-block:: none
 
