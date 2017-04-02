@@ -46,20 +46,6 @@ stage('additional dns setup') {
   }
 }
 
-stage('DNS Topology') {
-  node {
-      dir ('lib') {                    
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/internal_network server: pool /Common/internal_pool"'
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: not region /Common/internal_network server: pool /Common/external_pool"'
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
-                    sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
-                    sh 'sleep 3'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action save_config'
-      }
-  }
-}
 
 stage('Import App Services Template') {
   node {
@@ -107,6 +93,13 @@ stage('DNS Configuration') {
                     sh 'python bigip_dns_helper.py --host 10.1.1.7   --action create_region --name internal_network --internal_network 10.1.240.0/20'
                     sh 'python bigip_dns_helper.py --host 10.1.1.7   --action create_region --name region_1 --internal_network 10.1.240.0/24,10.1.10.0/24'
                     sh 'python bigip_dns_helper.py --host 10.1.1.7   --action create_region --name region_2 --internal_network 10.1.250.0/24,10.1.30.0/24'
+                    sh 'sleep 3'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/internal_network server: pool /Common/internal_pool"'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: not region /Common/internal_network server: pool /Common/external_pool"'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
+                    sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
                     sh 'sleep 3'
                     sh 'python bigip_dns_helper.py --host=10.1.1.7 --action save_config'
       }
