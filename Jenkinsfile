@@ -8,7 +8,7 @@ stage('run demo') {
   node {
       echo 'running demo...'
       sh 'pwd'
-      sh 'cd f5-udf-2.0'
+      dir 'f5-udf-2.0'
       sh 'pwd'
       sh 'sh udf.sh'
   }
