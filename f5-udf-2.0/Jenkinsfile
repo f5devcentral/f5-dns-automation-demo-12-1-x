@@ -1,9 +1,10 @@
 echo 'Starting DNS Automation Demo'
 stage('clone git repo') {
    node {
-     git url: 'https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x.git'
+     git url: 'https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x.git', branch:'master'
    }
 }
+
 stage('enable dns sync') {
   node {
       dir ('lib') {                    
@@ -106,3 +107,13 @@ stage('DNS Configuration') {
   }
 }
 
+stage('Verify Configuration') {
+  node {
+      dir ('f5-udf-2.0') {  
+          sh 'sleep 30'
+          sh 'python test-external.py user@10.1.1.6'
+		  sh 'python test-internal.py user@10.1.1.4 US-EAST-1D'
+		  sh 'python test-internal.py user@10.1.1.5 US-EAST-1E'
+      }
+  }
+}
