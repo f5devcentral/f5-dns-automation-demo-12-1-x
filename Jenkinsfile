@@ -8,7 +8,8 @@ stage('run demo') {
   node {
       echo 'running demo...'
       sh 'pwd'
-      sh 'cd f5-dns-automation-demo-12-1-x/f5-udf-2.0'
+      sh 'cd f5-udf-2.0'
       sh 'pwd'
+      sh 'sh udf.sh'
   }
 }
