@@ -114,6 +114,8 @@ An excerpt of the script that performs Lab 2 (create a DNS Sync Group):
    
 There is the same number of steps involved, but one-click!
 
+The full script can be found on `GitHub <https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x/blob/master/f5-udf-2.0/udf.sh>`_.
+
 Exploring the Demo
 ==================
 
