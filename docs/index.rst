@@ -50,7 +50,7 @@ also be leveraged to provide Service Catalog of L4-L7 services.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Lab 4: Using Jenkins to Orchestrate
+   :caption: Lab 4: Using Jenkins to Automate
 
    lab4/lab4_guide.rst
 
@@ -63,6 +63,12 @@ of automated workflows.
 The goal of this lab is to demonstrate how complex automation tasks can be hidden behind a generic automation engine. 
 In this case the deployment is in UDF 2.0. Running through the Lab demonstrates how easy it is to change the destination 
 to AWS or Azure or private cloud environments with keeping the shim layer unchanged.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Lab 5: Using Jenkins to Orchestrate
+
+   lab5/lab5_guide.rst
 
 Indices and tables
 ==================
