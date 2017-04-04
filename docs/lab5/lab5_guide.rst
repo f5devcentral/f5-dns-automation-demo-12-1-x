@@ -124,7 +124,22 @@ Click on "UDF-demo-pipeline" and you should see.
    :scale: 50%
    :align: center
 
-In order to run the project click on the left side the "Build Now" link.  While the build is running you will see.
+In order to run the project click on the left side the "Build with Parameters" link.  
+
+
+.. image:: udf-demo-pipeline-build-parameters.png
+   :scale: 50%
+   :align: center
+   
+In previous labs all the input parameters were statically defined making the solution only usable with a specific network.  By utilizing parameters in Jenkins we are creating a solution that can be deployed more dynamically.
+
+Scroll to the bottom of the page and find the "Build" button and click on it.
+   
+.. image:: udf-demo-pipeline-build-parameters-button.png
+   :scale: 50%
+   :align: center
+
+While the build is running you will see.
 
 .. image:: udf-demo-pipeline-running.png
    :scale: 50%
@@ -170,6 +185,8 @@ Find the "Pipeline" section.
 .. image:: udf-demo-pipeline-configure-pipeline.png
    :scale: 50%
    :align: center
+   
+The current pipeline is configured to pull down a copy of Jenkinsfile from the f5devcentral GitHub repository.  We are going to download a local copy of this file and modify it to simulate a failure.
 
 Select the pulldown for "Pipeline script from SCM" and change to "Pipeline Script".
 
@@ -198,9 +215,16 @@ Now click on the Save Button.
    :scale: 75%
    :align: center
 
-Back on the pipeline page find the "Build Now" link and click on it.
+Back on the pipeline page find the "Build with Parameters" link.  
 
-.. image:: udf-demo-pipeline-finished.png
+
+.. image:: udf-demo-pipeline-build-parameters.png
+   :scale: 50%
+   :align: center
+   
+Scroll to the bottom of the page and find the "Build" button and click on it.
+   
+.. image:: udf-demo-pipeline-build-parameters-button.png
    :scale: 50%
    :align: center
 
