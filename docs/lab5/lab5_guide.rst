@@ -53,27 +53,50 @@ The following will pull down a copy of the scripts used in this lab and execute 
        git url: 'https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x.git', branch:'master'
      }
   }
+
   stage('enable dns sync') {
     node {
-      dir ('lib') {                    
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action enable_sync'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action add_datacenter --datacenter SUBNET_10'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action add_datacenter --datacenter SUBNET_30'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action add_server  --datacenter SUBNET_10 --server_name bigip1 --server_ip=10.1.10.240'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action add_server  --datacenter SUBNET_30 --server_name bigip2 --server_ip=10.1.30.240'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.7 --action save_config'
+      dir ('lib') {
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action enable_sync'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action add_datacenter --datacenter ' + params.dc1 + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action add_datacenter --datacenter ' + params.dc2 + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action add_server  --datacenter ' + params.dc1 + ' --server_name bigip1 --server_ip=' + params.bigip1_selfip + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action add_server  --datacenter ' + params.dc2 + ' --server_name bigip2 --server_ip=' + params.bigip2_selfip + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action save_config'
       }
     }
   }
   stage('gtm add') {
     node {
-      dir ('lib') {                    
+        dir ('lib') {
+
                     sh 'sleep 3'
-                    sh 'python bigip_dns_helper.py --host=10.1.1.8 --action gtm_add --peer_host=10.1.1.7 --peer_selfip 10.1.10.240'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + ' --action gtm_add --peer_host=' + params.bigip1 + ' --peer_selfip ' + params.bigip1_selfip + ''
                     sh 'sleep 3'
-      }
+        }
     }
-  }  
+  }
+  stage('additional dns setup') {
+    node {
+        dir ('lib') {
+
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + '  --action create_dns_cache'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + '  --action create_dns_cache'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + '  --action create_external_dns_profile'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + '  --action create_external_dns_profile'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + '  --action create_internal_dns_profile'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + '  --action create_internal_dns_profile'
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + '  --action create_external_dns_listener --listener_ip ' + params.bigip1_dns_listener + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + '  --action create_external_dns_listener --listener_ip ' + params.bigip2_dns_listener + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + '  --action create_internal_dns_listener --listener_ip ' + params.bigip1_dns_listener + ' --internal_network ' + params.internal_network + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip2 + '  --action create_internal_dns_listener --listener_ip ' + params.bigip2_dns_listener + ' --internal_network ' + params.internal_network + ''
+                    sh 'python bigip_dns_helper.py --host=' + params.bigip1 + ' --action save_config'
+                    sh 'sleep 3'
+        }
+    }
+  }
+
+Note that in this code example that we are no longer using hardcoded IP addresses.  These are now parameters that can be input when the pipeline is executed.  
 
 The full code can be found on `GitHub <https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x/blob/master/f5-udf-2.0/Jenkinsfile>`_.  
   
@@ -158,11 +181,11 @@ Comment out the following lines (around line 100).
 
 .. code-block:: groovy
 
-  //sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
-  //sh 'python  bigip_dns_helper.py --host 10.1.1.7  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
-  //sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
-  //sh 'python  bigip_dns_helper.py --host 10.1.1.8  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
-
+  //sh 'python  bigip_dns_helper.py --host ' + params.bigip1 + '  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
+  //sh 'python  bigip_dns_helper.py --host ' + params.bigip1 + '  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
+  //sh 'python  bigip_dns_helper.py --host ' + params.bigip2 + '  --action create_topology_record --name "ldns: region /Common/region_1 server: region /Common/region_1"'
+  //sh 'python  bigip_dns_helper.py --host ' + params.bigip2 + '  --action create_topology_record --name "ldns: region /Common/region_2 server: region /Common/region_2"'
+  
 The result should look something like:
 
 .. image:: udf-demo-pipeline-configure-pipeline-comment-out.png
