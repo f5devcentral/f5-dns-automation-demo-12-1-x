@@ -104,8 +104,8 @@ Find the win2008-rdp component and click on the "Access" button to display the "
    
 Download/launch the RDP link.  
 
-| *Note that RDP will launch full screen*
-| *For HiDPI displays you may want to re-size your screen first*
+.. warning::  For MAC user, it is recommended to use Microsoft Remote Desktop. You may not be able to access your jumpbox otherwise. It is available in the App store (FREE).
+ 
 
 The username is "Administrator" and the password can be found under the "Details" page of the win2008-rdp component.  
 Note: copy/paste of the password into the RDP session does not work. You can copy the password, open the RDP session settings in your RPD clinet and paste the password there. Save it and open the RDP session. You should see a desktop that looks like the following.
@@ -113,6 +113,11 @@ Note: copy/paste of the password into the RDP session does not work. You can cop
 .. image:: windows-desktop.png
    :scale: 50%
    :align: center
+
+.. warning:: Help for small font/text.  The lab is optimized for a 1080p display.  For HiDPI displays you may want to re-size your screen first.  See :ref:`setup_hi_dpi` for some suggested tips.
+
+For help on changing the Keyboard Language please see :ref:`setup_keyboard`
+   
    
 Licensing/Resetting BIG-IP
 ==========================
@@ -148,5 +153,59 @@ Double-click on both of these and you should see a window appear briefly like th
 
 You are now ready to start the next Lab: :doc:`../lab2/sync-group`
    
+Appendix
+========
 
+.. _setup_hi_dpi:
 
+HiDPI Displays
+--------------
+
+The default resolution is intended for low DPI monitors (i.e. 1080p).
+
+If you need to change the DPI (make the font/text large) right click on the desktop.
+
+.. image:: screen-resolution-menu.png
+   :scale: 50%
+   :align: center
+   
+Click on the "Make text and other items larger..."   
+
+.. image:: screen-resolution-page.png
+   :scale: 50%
+   :align: center
+
+Select "150%".  Logout/login.
+
+.. image:: screen-resolution-text.png
+   :scale: 50%
+   :align: center   
+
+   
+.. _setup_keyboard:
+
+Change keyboard input
+---------------------
+
+   The default keyboard mapping is set to english. If you need to change it, here is the method
+   
+   * Click on the start menu button and type 'Language' in the search field.
+   * Click on 'change keyboards' option in the search list
+   
+   .. image:: change-keyboards.png
+      :scale: 50 %
+      :align: center
+
+   * Click on 'Add a language' 
+   
+   .. image:: add-keyboard.png
+      :scale: 50 %
+      :align: center
+
+   * Add the language you want to have for your keyboard mapping. 
+   
+   .. image:: select-keyboard.png
+      :scale: 50 %
+      :align: center
+	  
+   * Select the language (bottom right of screen).
