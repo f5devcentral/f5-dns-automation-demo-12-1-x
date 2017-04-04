@@ -190,7 +190,7 @@ The current pipeline is configured to pull down a copy of Jenkinsfile from the f
 
 Select the pulldown for "Pipeline script from SCM" and change to "Pipeline Script".
 
-Go to `GitHub <https://raw.githubusercontent.com/f5devcentral/f5-dns-automation-demo-12-1-x/master/f5-udf-2.0/Jenkinsfile>`_ and copy the text into your clipboard.  If you are using a Mac or your RDP client is not supporting copy and paste you can also find a copy of the file on your Desktop.  Browse to "Desktop\f5-dns-automation-demo-12-1-x\f5-udf-2.0".  Right click on the file and "Edit with Notepad++".
+Go to `GitHub <https://raw.githubusercontent.com/f5devcentral/f5-dns-automation-demo-12-1-x/master/f5-udf-2.0/Jenkinsfile>`_ and copy the text into your clipboard.  If you are using a Mac or your RDP client is not supporting copy and paste you can also find a copy of the file on your Desktop.  Browse to "Desktop\\f5-dns-automation-demo-12-1-x\\f5-udf-2.0".  Right click on the file and "Edit with Notepad++".
 
 .. image:: jenkinsfile-notepad++.png
    :scale: 50%
