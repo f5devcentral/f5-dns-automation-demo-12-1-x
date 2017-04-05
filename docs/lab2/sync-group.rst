@@ -232,7 +232,7 @@ Next create on each BIG-IP internal listeners via the LTM menu. The listener is 
 Use these IP addresses:
 
 ====== ========== =====
-Name   Address    Port
+Device   Address    Port
 ====== ========== =====
 bigip1 10.1.10.13 53
 bigip2 10.1.30.13 53
