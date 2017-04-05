@@ -122,6 +122,8 @@ Run the command:
 .. image:: gtm_add.png
    :scale: 50%
    :align: center
+   
+.. warning:: In the lab the self-ip is configured to allow ALL services.  This is not a safe production configuration.
 
 When prompted confirm/enter password.
 
@@ -153,7 +155,7 @@ DNS Cache
 In the Demo environment we will use BIG-IP DNS as a DNS resolver.  Create a DNS cache named "dns_cache".  This needs to be done separately on each BIG-IP device.  
 
 Under DNS -> Caches -> Cache List:
-Create a DNS cache profile "internal_cache" and accept default values.
+Create a DNS cache profile "dns_cache" and accept default values.
 
 .. image:: internal_cache_profile.png
    :scale: 50%
@@ -196,8 +198,8 @@ Create a profile named "internal_dns" that enables a DNS cache for resolving nam
 DNS Listeners
 -------------
 
-For external DNS we have two listeners for each BIG-IP. One TCP and one UDP.
-First create on both BIG-IP's the external Listeners for TCP and UDP. Apply the external_dns profile to each.
+For external DNS we have two listeners for each BIG-IP. One external and one internal.
+First create on both BIG-IP's the external Listeners. Apply the external_dns profile to each.
 Use these IP addresses:
 
 ====== ========== =====
@@ -213,21 +215,10 @@ External DNS Listener
 ^^^^^^^^^^^^^^^^^^^^^
 
 DNS -> Delivery -> Listeners
-Here the external TCP listener
 
-.. image:: external_tcp_listener.png
-   :scale: 50%
-   :align: center
+Here is the external DNS listener
 
-Here the external UDP listener
-
-.. image:: external_udp_listener.png
-   :scale: 50%
-   :align: center
-   
-Next go to LTM Virtual server menu. The external listeners will apper as virtual servers.
-
-.. image:: check_external_listener_in_ltm_menu.png
+.. image:: external_dns_listener.png
    :scale: 50%
    :align: center
 
@@ -236,7 +227,8 @@ Next go to LTM Virtual server menu. The external listeners will apper as virtual
 Internal DNS Listener
 ^^^^^^^^^^^^^^^^^^^^^
 
-Next create on each BIG-IP internal listeners via the LTM menu. The listener is a virtual server. Specify following source address range on each internal listener: 10.1.0.0/16 and apply the "internal_dns" DNS profile. Keep all other settings as default.
+Next create on each BIG-IP internal listeners via the LTM menu. The listener is a virtual server. Specify following source address range on each internal listener: 10.1.0.0/16, UDP profile is set to udp_gtm_dns, and apply the "internal_dns" DNS profile. Keep all other settings as default.
+
 Use these IP addresses:
 
 ====== ========== =====
@@ -246,16 +238,15 @@ bigip1 10.1.10.13 53
 bigip2 10.1.30.13 53
 ====== ========== =====
 
-Create listeners for TCP and UDP 
-Here is an example of the internal TCP Listener:
+Create listeners for external and internal DNS.  Name the external listener "external_dns_listener" and the internal listener "internal_dns_listener".
+ 
+Here is an example of the internal Listener:
 
-.. image:: internal_tcp_listener.png
+.. image:: internal_dns_listener.png
    :scale: 50%
    :align: center
    
-.. image:: internal_listeners_dns_profile.png
-   :scale: 50%
-   :align: center
+Note that the source address is set to 10.1.0.0/16,  , and the DNS profile is set to "internal_dns".
 
  For the demo all requests go through the internal listener, but in another environment you could split this out.
 
