@@ -241,11 +241,11 @@ if __name__ == "__main__":
    parser.add_option('--password-file',dest='password_file')
    parser.add_option('--action')
    parser.add_option('--pool_members')
-   parser.add_option('--use_eip')
+   parser.add_option('--use_eip',action='store_true',default=False)
    (options,args) = parser.parse_args()
    
    password = open(options.password_file).readline().strip()
-   demo = Demo(options.primary_stack, options.secondary_stack, password)
+   demo = Demo(options.primary_stack, options.secondary_stack, password,use_eip=options.use_eip)
 
    if options.action == 'setup_dns':
        demo.setup_dns()
