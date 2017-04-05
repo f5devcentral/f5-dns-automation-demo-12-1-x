@@ -203,7 +203,7 @@ First create on both BIG-IP's the external Listeners. Apply the external_dns pro
 Use these IP addresses:
 
 ====== ========== =====
-Name   Address    Port
+Device   Address    Port
 ====== ========== =====
 bigip1 10.1.10.13 53
 bigip2 10.1.30.13 53
