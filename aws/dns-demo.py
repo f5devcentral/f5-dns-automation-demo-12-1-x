@@ -24,7 +24,7 @@ def create_stack(primary_stack, secondary_stack):
     pass
 
 class Demo(object):
-    def __init__(self, primary_stack, secondary_stack, password):
+    def __init__(self, primary_stack, secondary_stack, password,use_eip = False):
         self.primary_stack = primary_stack
         self.secondary_stack = secondary_stack
         self.password = password
@@ -55,9 +55,12 @@ class Demo(object):
         
         self.primary_dev = self._get_ip(self.primary_instance.network_interfaces)
         self.secondary_dev = self._get_ip(self.secondary_instance.network_interfaces)
-
-        self.primary_mgmt_ip = self.primary_dev[0][0][0]
-        self.secondary_mgmt_ip = self.secondary_dev[0][0][0]
+        if use_eip:
+            self.primary_mgmt_ip = self.primary_dev[0][0][1]
+            self.secondary_mgmt_ip = self.secondary_dev[0][0][1]
+        else:
+            self.primary_mgmt_ip = self.primary_dev[0][0][0]
+            self.secondary_mgmt_ip = self.secondary_dev[0][0][0]
 
         self.primary_eni_1 = filter(lambda a: a.attachment['DeviceIndex'] == 1, self.primary_instance.network_interfaces)[0]
         self.secondary_eni_1 = filter(lambda a: a.attachment['DeviceIndex'] == 1, self.secondary_instance.network_interfaces)[0]
@@ -238,6 +241,7 @@ if __name__ == "__main__":
    parser.add_option('--password-file',dest='password_file')
    parser.add_option('--action')
    parser.add_option('--pool_members')
+   parser.add_option('--use_eip')
    (options,args) = parser.parse_args()
    
    password = open(options.password_file).readline().strip()
@@ -260,6 +264,6 @@ if __name__ == "__main__":
    elif options.action == 'wait_for_stack':
        while demo.primary_stack_status == 'CREATE_IN_PROGRESS' or demo.secondary_stack_status == 'CREATE_IN_PROGRESS':
            import time
-           time.sleep(3)
+           time.sleep(60)
            demo = Demo(options.primary_stack, options.secondary_stack, password)
            print 'waiting'
