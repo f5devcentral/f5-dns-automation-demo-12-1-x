@@ -140,7 +140,7 @@ In Job 1 and 2 the BIG-IP were prepared to receive the configuration.
 Job 3 deploys the udf.sh script from lab 3 to both BIG-IP's.
 After this deployment the BIG-IP's are ready to serve the service.
 
-Click "Build On" and monito the console output.
+Click "Built On" and monitor the console output.
 
 **Question** What is the console status after the Job completed?
 
