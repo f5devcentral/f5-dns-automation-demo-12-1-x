@@ -115,7 +115,7 @@ In the task list click on UDF-demo to return to the folder
 
 The task of Job 1a and Job 1b is to license the BIG=IP instances.
 
-there are multiple ways to build a project. In this case click on the "Build On" button at the right side of the screen for Job 1a and Job 1b. 
+there are multiple ways to build a project. In this case click on the "Built On" button at the right side of the screen for Job 1a and Job 1b. 
 
 .. image:: build_on_button.png
    :scale: 50%
