@@ -321,7 +321,7 @@ if __name__ == "__main__":
        while demo.primary_stack_status == 'CREATE_IN_PROGRESS' or demo.secondary_stack_status == 'CREATE_IN_PROGRESS':
            import time
            time.sleep(60)
-           demo = Demo(options.primary_stack, options.secondary_stack, password)
+           demo = Demo(options.primary_stack, options.secondary_stack, password,use_eip=options.use_eip)
            print 'waiting'
    elif options.action == 'test_external':
        demo.test_external()
