@@ -222,6 +222,21 @@ The "test-server[1-2]" links are simulating requests from internal clients.  Not
 
 **Question** Can you explain how this is being done?  (Hint: Look at the Optional Exercise from Lab 2).
 
+Disabling a pool member
+-----------------------
+
+On BIG-IP 1 go to iApps -> Application Services 
+
+Click on "external_vs" and click reconfigure.
+
+Disable the external_vs pool member 10.1.240.10.
+
+.. image:: disable-bigip-1-external-vs.png
+   :scale: 50%
+   :align: center
+
+Re-run the external tests.
+
 Please proceed to Lab 4. :doc:`../lab4/lab4_guide`
 
 Optional Exercises
