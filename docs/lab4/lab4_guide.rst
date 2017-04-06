@@ -115,7 +115,7 @@ In the task list click on UDF-demo to return to the folder
 
 The task of Job 1a and Job 1b is to license the BIG=IP instances.
 
-there are multiple ways to build a project. In this case click on the "Build On" button at the right side of the screen for Job 1a and Job 1b. 
+there are multiple ways to build a project. In this case click on the "Built On" button at the right side of the screen for Job 1a and Job 1b. 
 
 .. image:: build_on_button.png
    :scale: 50%
@@ -140,7 +140,7 @@ In Job 1 and 2 the BIG-IP were prepared to receive the configuration.
 Job 3 deploys the udf.sh script from lab 3 to both BIG-IP's.
 After this deployment the BIG-IP's are ready to serve the service.
 
-Click "Build On" and monito the console output.
+Click "Built On" and monitor the console output.
 
 **Question** What is the console status after the Job completed?
 
