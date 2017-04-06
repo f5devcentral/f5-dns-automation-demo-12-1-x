@@ -334,7 +334,7 @@ The demo will show two sections:
 
 1. Split DNS: BIG-IP DNS will respond to internal clients with private IP addresses differently than for external clients with IP addresses that are not internal.
 2. regional Loadbalancing - based on the region of the client IP the response will be different.
-	Note: we will simulate the requin with a private IP address range, because this lab is not exposed to the Internet.
+	Note: we will simulate the request with a private IP address range, because this lab is not exposed to the Internet.
 	
 The steps to create geolocation based load balancing on BIG-IP DNS are:
 
