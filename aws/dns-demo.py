@@ -11,7 +11,7 @@ from optparse import OptionParser
 from bigip_dns_helper import DnsHelper
 import logging
 import time
-
+import subprocess
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('dns_demo')
@@ -232,6 +232,62 @@ class Demo(object):
         self.dns_helper.create_topology_record("ldns: not region /Common/vpc-cidr-block server: pool /Common/%s" %("sample_ext_pool"))
         # ldns: region /Common/us-east-1d server: region /Common/us-east-1d
         self.dns_helper.create_wideip("sample.f5demo.com",["sample_ext_pool","sample_int_pool"])
+    def test_external(self):
+
+        ssh_cmd = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null".split()
+        get_ip = "dig @%s +short sample.f5demo.com" %(self.primary_dev[1][1][1])
+        has_d = False
+        has_e = False
+        for x in range(10):
+            p = subprocess.Popen(get_ip.split(),stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE, close_fds=True)
+            output = p.stdout.read().strip()
+            curl_cmd = "curl http://%s/simple.php -H host:sample.f5demo.com -v" %(output)
+            print curl_cmd
+            p = subprocess.Popen(curl_cmd.split(),stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE, close_fds=True)
+            output = p.stdout.read()            
+            print output
+            if 'US-EAST-1D' in output:
+                has_d = True
+            elif 'US-EAST-1E' in output:
+                has_e = True
+            if has_d and has_e:
+                print 'Success.  round-robin LB for external clients'
+                return
+            time.sleep(1)
+        raise Exception, 'Failed to detect round-robin LB for external clients'
+
+    def test_internal(self,user_hostname_dc):
+        (user_hostname,dc) = user_hostname_dc.split(':')
+        
+        ssh_cmd = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null".split()
+        get_ip = "dig @%s +short sample.f5demo.com" %(self.primary_dns_listener)
+        has_d = False
+        has_e = False
+        for x in range(10):
+            p = subprocess.Popen(ssh_cmd + [user_hostname] + get_ip.split(),stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE, close_fds=True)
+            output = p.stdout.read().strip()
+            curl_cmd = "curl http://%s/simple.php -H host:sample.f5demo.com -v" %(output)
+            print curl_cmd
+            p = subprocess.Popen(ssh_cmd + [user_hostname] +curl_cmd.split(),stdin=subprocess.PIPE, stdout=subprocess.PIPE,stderr=subprocess.PIPE, close_fds=True)
+            output = p.stdout.read()            
+            print output
+            if 'US-EAST-1D' in output:
+                has_d = True
+            elif 'US-EAST-1E' in output:
+                has_e = True
+            if has_d and has_e:
+                raise Exception, 'Failure.  round-robin LB for internal clients'
+            time.sleep(1)
+            if has_d and dc == 'US-EAST-1E':
+                raise Exception, 'Failure.  Detected wrong Data Center'
+            elif has_e and dc == 'US-EAST-1D':
+                raise Exception, 'Failure.  Detected wrong Data Center'
+            elif not has_d and not has_e:
+                raise Exception, 'Failure.  Detected no Data Center'
+        print 'Success.  Affinity correct.'
+
+            
+        
 
 if __name__ == "__main__":
    parser = OptionParser()
@@ -267,3 +323,7 @@ if __name__ == "__main__":
            time.sleep(60)
            demo = Demo(options.primary_stack, options.secondary_stack, password)
            print 'waiting'
+   elif options.action == 'test_external':
+       demo.test_external()
+   elif options.action == 'test_internal':
+       demo.test_internal(options.pool_members)
