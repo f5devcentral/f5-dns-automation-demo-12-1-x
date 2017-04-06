@@ -58,6 +58,7 @@ Launch BIG-IP instances using 25Mbps Better hourly license.
 Configure BIG-IP DNS and create sync cluster (DNS)
 
 ```
+./dns-demo.py --action wait_for_stack --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt 
 ./dns-demo.py --action setup_dns --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt
 ./dns-demo.py --action gtm_add --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt
 ./dns-demo.py --action setup_dns2 --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt

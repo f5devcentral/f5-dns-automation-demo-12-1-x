@@ -5,6 +5,7 @@ import sys
 from pprint import pprint
 import os
 from optparse import OptionParser
+import time
 
 parser = OptionParser()
 parser.add_option('-s','--stack',dest='stack')
@@ -26,6 +27,16 @@ if options.input_stack:
     for param in parameters:
         if param['ParameterKey'] == 'EniStackName':
             param['ParameterValue'] = options.input_stack
+        resp = cloudformation.describe_stacks(StackName=options.input_stack)
+        stack_status = resp['Stacks'][0]['StackStatus']
+
+        while stack_status == 'CREATE_IN_PROGRESS' :
+            print 'CREATE_IN_PROGRESS'
+
+            time.sleep(10)
+
+            resp = cloudformation.describe_stacks(StackName=options.input_stack)
+            stack_status = resp['Stacks'][0]['StackStatus']
 
 if options.password_file:
     password = open(options.password_file).readline().strip()
