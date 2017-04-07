@@ -186,7 +186,7 @@ Find the "Pipeline" section.
    :scale: 50%
    :align: center
    
-The current pipeline is configured to pull down a copy of the Jenkins file from the f5devcentral GitHub repository.  We are going to download a local copy of this file and modify it to simulate a failure.
+The current pipeline is configured to pull down a copy of the file "f5-udf-2.0/Jenkinsfile" from the f5devcentral GitHub repository.  We are going to download a local copy of this file and modify it to simulate a failure.
 
 Select the pulldown for "Pipeline script from SCM" and change to "Pipeline Script".
 
