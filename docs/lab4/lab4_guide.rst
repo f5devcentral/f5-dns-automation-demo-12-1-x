@@ -85,7 +85,7 @@ In order to run the project click on the left side the "Build Now" link.
    :scale: 50%
    :align: center
    
-Note that at the left side the "Buildung History" list adds a new build.
+Note that at the left side the "Building History" list adds a new build.
 
 .. image:: build_history.png
    :scale: 50%
