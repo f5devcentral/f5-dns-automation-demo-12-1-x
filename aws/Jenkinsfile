@@ -1,0 +1,79 @@
+echo 'Starting DNS Automation Demo'
+stage('clone git repo') {
+   node {
+     git url: 'https://github.com/f5devcentral/f5-dns-automation-demo-12-1-x.git', branch:'develop'
+   }
+}
+
+stage('create admin_passwd.txt') {
+    node {
+        sh 'echo '    + params.adminPassword +'>aws/admin_passwd.txt'
+    }
+}
+/*
+stage('create ENI stacks') {
+    node {
+        dir('aws') {
+            sh 'python create-stack.py -t templates/create-eni-stack.template -p params/eni-stack-params-az1.json -s ' + params.eni_stack1
+            sh 'python create-stack.py -t templates/create-eni-stack.template -p params/eni-stack-params-az2.json -s ' + params.eni_stack2
+            
+        }
+    }
+}
+stage('create BIG-IP stacks') {
+    node {
+        dir('aws') {
+           sh 'python create-stack.py -t templates/bigip-hourly-stack.template -p params/bigip-hourly-stack-params.json --password-file=admin_passwd.txt --sshkey=erchen -i ' + params.eni_stack1 + ' -s ' + params.bigip_stack1
+            sh 'python create-stack.py -t templates/bigip-hourly-stack.template -p params/bigip-hourly-stack-params.json --password-file=admin_passwd.txt --sshkey=erchen -i ' + params.eni_stack2 + ' -s ' + params.bigip_stack2
+           sh 'python dns-demo.py --action wait_for_stack --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt --use_eip'
+        }
+    }
+}
+*/
+stage('DNS configuration') {
+    node {
+     dir('aws')   {
+        sh 'python dns-demo.py --action setup_dns --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+       sh 'python dns-demo.py --action gtm_add --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+        sh 'python dns-demo.py --action setup_dns2 --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+     }
+    }
+
+}
+stage('Import App Services Template') {
+  node {
+      dir ('aws') {
+          sh 'python dns-demo.py --action import_iapp --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+      }
+  }
+}
+stage('Deploy App Services Template') {
+  node {
+      dir ('aws') {
+        sh 'python dns-demo.py --action deploy_primary_vs1 --pool_members  ' + params.bigip1_pools + ' --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+        sh 'python dns-demo.py --action deploy_secondary_vs1 --pool_members ' + params.bigip2_pools + ' --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'    
+      
+      }
+  }
+}
+stage('DNS Configuration') {
+  node {
+      dir ('aws') {
+                    sh 'python dns-demo.py --action deploy_vs1_dns --primary_stack ' + params.bigip_stack1 + ' --secondary_stack ' + params.bigip_stack2 + ' --password-file admin_passwd.txt --use_eip'
+                    
+
+      }
+  }
+}
+
+stage('Verify Configuration') {
+  node {
+      dir ('aws') {
+          sh 'sleep 30'
+                  sh 'python dns-demo.py --action test_external --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt --use_eip'
+                  sh 'python dns-demo.py --action test_internal --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt --use_eip --pool_members ' + params.server1 + ':US-EAST-1D'
+				  sh 'python dns-demo.py --action test_internal --primary_stack erchen-bigip-1 --secondary_stack erchen-bigip-2 --password-file admin_passwd.txt --use_eip --pool_members ' + params.server2 + ':US-EAST-1E'
+                  
+      }
+  }
+}
